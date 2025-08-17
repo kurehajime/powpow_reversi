@@ -44,6 +44,15 @@ export class Field {
     return this.getFlips(index, this._turn).length > 0
   }
 
+  // List legal move indices for current player
+  public ListLegalMoves(): number[] {
+    const res: number[] = []
+    for (let i = 0; i < this._cells.length; i++) {
+      if (this._cells[i] === 0 && this.getFlips(i, this._turn).length > 0) res.push(i)
+    }
+    return res
+  }
+
   // Whether current player has any legal move
   public HasAnyMove(): boolean {
     for (let i = 0; i < this._cells.length; i++) {

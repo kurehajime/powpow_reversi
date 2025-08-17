@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
+import { thinkAlphaBeta } from '../ai/AlphaBeta'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -9,6 +10,7 @@ export default function GameElement() {
   const [status, setStatus] = useState<string>('')
   const turnLabel = field.Turn === 1 ? 'Black' : 'White'
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
+  const cpuSide: 1 | -1 = -1 // CPUは白
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
@@ -29,6 +31,22 @@ export default function GameElement() {
         // both have no moves -> do nothing here (end state). Optional message:
         setStatus('双方打てる手がありません')
       }
+    }
+  }, [field])
+
+  // CPU move on its turn
+  useEffect(() => {
+    if (field.Turn !== cpuSide) return
+    if (!field.HasAnyMove()) return
+    setStatus('CPU考え中...')
+    // 同期で十分。必要ならsetTimeoutで遅延演出可能
+    const { index } = thinkAlphaBeta(field, 3)
+    if (index != null) {
+      const next = field.Place(index)
+      setStatus('')
+      setField(next)
+    } else {
+      setStatus('')
     }
   }, [field])
 
