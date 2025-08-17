@@ -1,4 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import lv0Img from '../assets/lv0.png'
+import lv1Img from '../assets/lv1.png'
+import lv2Img from '../assets/lv2.png'
+import lv3Img from '../assets/lv3.png'
+import lv4Img from '../assets/lv4.png'
+import lv5Img from '../assets/lv5.png'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
@@ -49,8 +55,21 @@ export default function GameElement() {
     const b = parseInt(m[3], 16)
     return `rgba(${r}, ${g}, ${b}, ${alpha})`
   }
-  // Always show AI side avatar (🤖) regardless of turn or result
-  const bigAvatarChar = useMemo(() => (started ? '🤖' : ''), [started])
+  // Always show AI side avatar image regardless of turn or result
+  const aiImgSrc = useMemo(() => {
+    const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img]
+    return list[Math.max(0, Math.min(5, depth))]
+  }, [depth])
+  const bigAvatarElement = useMemo(() => {
+    if (!started) return null
+    return (
+      <img
+        src={aiImgSrc}
+        alt={`AI ${aiStrengthLabel}`}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }}
+      />
+    )
+  }, [started, aiImgSrc, aiStrengthLabel])
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
@@ -171,16 +190,16 @@ export default function GameElement() {
         {!started ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
             <div>
-              先手/後手:
+              Player:
               <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> 先手（黒）
+                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> Black
               </label>
               <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> 後手（白）
+                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> White
               </label>
             </div>
             <div>
-              強さ:
+              AI:
               <div style={{ display: 'inline-block', position: 'relative', marginLeft: 8 }}>
                 <select
                   value={depth}
@@ -211,19 +230,23 @@ export default function GameElement() {
           </div>
         ) : ended ? (
           <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
-            <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
+              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
+              <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
+            </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
               <ScoreElement field={field} />
-              <div>AI: {aiStrengthLabel}</div>
             </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
-            <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
+              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
+              <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
+            </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
               <ScoreElement field={field} />
               <div>{status}</div>
-              <div>AI: {aiStrengthLabel}</div>
             </div>
           </div>
         )}
