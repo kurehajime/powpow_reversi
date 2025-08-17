@@ -15,11 +15,10 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
   const dim = size * cellSize
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!onCellClick) return
-    const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const ix = Math.floor(x / (rect.width / size))
-    const iy = Math.floor(y / (rect.height / size))
+    const x = (e.nativeEvent as MouseEvent).offsetX
+    const y = (e.nativeEvent as MouseEvent).offsetY
+    const ix = Math.floor(x / cellSize)
+    const iy = Math.floor(y / cellSize)
     const index = ix + iy * size
     onCellClick(index)
   }
