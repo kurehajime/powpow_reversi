@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
-import { thinkAlphaBeta } from '../ai/AlphaBeta'
+import { thinkAlphaBeta, thinkGreedy } from '../ai/AlphaBeta'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -70,7 +70,7 @@ export default function GameElement() {
     if (!field.HasAnyMove()) return
     setStatus('CPU考え中...')
     // 同期で十分。必要ならsetTimeoutで遅延演出可能
-    const { index } = thinkAlphaBeta(field, depth)
+    const { index } = (depth === 0 ? thinkGreedy(field) : thinkAlphaBeta(field, depth))
     if (index != null) {
       const next = field.Place(index)
       setStatus('')
@@ -99,8 +99,9 @@ export default function GameElement() {
             <div>
               強さ:
               <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
-                <option value={1}>1（ひよこ）</option>
-                <option value={2}>2（ウサギ）</option>
+                <option value={0}>0（ひよこ）</option>
+                <option value={1}>1（ウサギ）</option>
+                <option value={2}>2（ネコ）</option>
                 <option value={3}>3（オオカミ）</option>
                 <option value={4}>4（ライオン）</option>
                 <option value={5}>5（ドラゴン）</option>

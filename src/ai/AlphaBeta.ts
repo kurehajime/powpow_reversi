@@ -28,6 +28,7 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
     return { index: null, score: evaluate(field) }
   }
 
+  // Depth 0: stop search and return static evaluation of this node
   if (depth <= 0) {
     return { index: null, score: evaluate(field) }
   }
@@ -61,5 +62,20 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
     }
   }
 
+  return { index: bestIndex, score: bestScore }
+}
+
+// One-ply greedy move: pick the child with best static score
+export function thinkGreedy(field: Field): AiResult {
+  const legal = field.ListLegalMoves()
+  if (legal.length === 0) return { index: null, score: evaluate(field) }
+  const maximizing = field.Turn === 1
+  let bestIndex: number | null = null
+  let bestScore = maximizing ? -1_000_000_000 : 1_000_000_000
+  for (const idx of legal) {
+    const sc = evaluate(field.Place(idx))
+    if (bestIndex === null) { bestIndex = idx; bestScore = sc }
+    else if (maximizing ? sc > bestScore : sc < bestScore) { bestIndex = idx; bestScore = sc }
+  }
   return { index: bestIndex, score: bestScore }
 }

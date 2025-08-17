@@ -13,10 +13,12 @@ export default function ScoreElement({ field }: Props) {
   const barRadius = 6
 
   const Bar = ({ percent, fg, bg, border }: { percent: number, fg: string, bg: string, border: string }) => (
-    <div style={{ width: '100%', background: bg, border: `1px solid ${border}`, borderRadius: barRadius, height: barHeight, position: 'relative' }}>
+    <div style={{ width: '100%', background: bg, border: `1px solid ${border}`, borderRadius: barRadius, height: barHeight, position: 'relative', overflow: 'hidden' }}>
       <div style={{ width: `${percent}%`, background: fg, height: '100%', borderRadius: barRadius }}></div>
     </div>
   )
+  const hatchBg = 'repeating-linear-gradient(45deg, #f0f0f0 0 6px, #e0e0e0 6px 12px), ' +
+                  'repeating-linear-gradient(-45deg, #f0f0f0 0 6px, #e0e0e0 6px 12px)'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', textAlign: 'center', alignItems: 'center' }}>
@@ -26,7 +28,7 @@ export default function ScoreElement({ field }: Props) {
           <strong style={{ marginLeft: 8 }}>Black</strong>
           <span style={{ marginLeft: 8 }}>{black} / 1000</span>
         </div>
-        <Bar percent={toPercent(black)} fg="#111" bg="#f5f5f5" border="#000" />
+        <Bar percent={toPercent(black)} fg="#111" bg={hatchBg} border="#000" />
       </div>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
         <div>
@@ -34,7 +36,7 @@ export default function ScoreElement({ field }: Props) {
           <strong style={{ marginLeft: 8 }}>White</strong>
           <span style={{ marginLeft: 8 }}>{white} / 1000</span>
         </div>
-        <Bar percent={toPercent(white)} fg="#fafafa" bg="#6b6b6b" border="#000" />
+        <Bar percent={toPercent(white)} fg="#fafafa" bg={hatchBg} border="#000" />
       </div>
     </div>
   )
