@@ -18,6 +18,13 @@ export default function GameElement() {
   const boardSize = field.Size() * cellSize
   const topPanelHeight = 160
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
+  const resultText = useMemo(() => {
+    if (!ended) return ''
+    const { black, white } = field.Score()
+    const winner = black === white ? 0 : (black > white ? 1 : -1)
+    if (winner === 0) return 'DRAW'
+    return winner === humanSide ? 'YOU WIN' : 'YOU LOSE'
+  }, [ended, field, humanSide])
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
@@ -116,22 +123,37 @@ export default function GameElement() {
         )}
       </div>
 
-      <FieldElement
-        field={field}
-        cellSize={cellSize}
-        hints={hints}
-        hintColor={hintColor}
-        onCellClick={(index) => {
-          if (!started || ended) return
-          if (field.Turn !== humanSide) return
-          if (field.IsEndByScore()) return
-          const next = field.Place(index)
-          if (next !== field) {
-            setStatus('')
-            setField(next)
-          }
-        }}
-      />
+      <div style={{ position: 'relative', width: boardSize, height: boardSize }}>
+        <FieldElement
+          field={field}
+          cellSize={cellSize}
+          hints={hints}
+          hintColor={hintColor}
+          onCellClick={(index) => {
+            if (!started || ended) return
+            if (field.Turn !== humanSide) return
+            if (field.IsEndByScore()) return
+            const next = field.Place(index)
+            if (next !== field) {
+              setStatus('')
+              setField(next)
+            }
+          }}
+        />
+        {ended && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
+            <div style={{
+              fontSize: 48,
+              fontWeight: 800,
+              color: resultText === 'YOU WIN' ? '#64b5f6' : resultText === 'YOU LOSE' ? '#ff5252' : '#ffd740',
+              letterSpacing: 2,
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            }}>
+              {resultText}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

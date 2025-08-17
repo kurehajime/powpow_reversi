@@ -8,15 +8,33 @@ export default function ScoreElement({ field }: Props) {
   const cells = field.Cells
   const black = cells.filter(c => c > 0).reduce((s, c) => s + Math.abs(c), 0)
   const white = cells.filter(c => c < 0).reduce((s, c) => s + Math.abs(c), 0)
+  const toPercent = (v: number) => Math.max(0, Math.min(100, (v / 1000) * 100))
+  const barHeight = 14
+  const barRadius = 6
+
+  const Bar = ({ percent, fg, bg, border }: { percent: number, fg: string, bg: string, border: string }) => (
+    <div style={{ width: '100%', background: bg, border: `1px solid ${border}`, borderRadius: barRadius, height: barHeight, position: 'relative' }}>
+      <div style={{ width: `${percent}%`, background: fg, height: '100%', borderRadius: barRadius }}></div>
+    </div>
+  )
+
   return (
-    <div style={{ display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center', marginBottom: 8, width: '100%', textAlign: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#111', border: '1px solid #000' }} />
-        <strong>Black:</strong> {black}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', textAlign: 'center', alignItems: 'center' }}>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div>
+          <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#111', border: '1px solid #000', verticalAlign: 'middle' }} />
+          <strong style={{ marginLeft: 8 }}>Black</strong>
+          <span style={{ marginLeft: 8 }}>{black} / 1000</span>
+        </div>
+        <Bar percent={toPercent(black)} fg="#111" bg="#f5f5f5" border="#000" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#fafafa', border: '1px solid #000' }} />
-        <strong>White:</strong> {white}
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div>
+          <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#fafafa', border: '1px solid #000', verticalAlign: 'middle' }} />
+          <strong style={{ marginLeft: 8 }}>White</strong>
+          <span style={{ marginLeft: 8 }}>{white} / 1000</span>
+        </div>
+        <Bar percent={toPercent(white)} fg="#fafafa" bg="#6b6b6b" border="#000" />
       </div>
     </div>
   )
