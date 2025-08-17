@@ -27,8 +27,15 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Show versions
+        run: |
+          node -v
+          npm -v
+
+      - name: Clean install (workaround rollup optional deps)
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: Build
         run: npm run build
@@ -48,4 +55,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
