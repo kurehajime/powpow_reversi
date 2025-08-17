@@ -27,20 +27,28 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
 
   // flip fade animation
   const prevRef = useRef<Cell>(cell)
+  const rafRef = useRef<number | null>(null)
+  const clearRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [fadeFrom, setFadeFrom] = useState<Cell | null>(null)
   const [showNew, setShowNew] = useState<boolean>(true)
   useEffect(() => {
     const prev = prevRef.current
     const ps = prev === 0 ? 0 : prev > 0 ? 1 : -1
     const cs = cell === 0 ? 0 : cell > 0 ? 1 : -1
+    // trigger fade only on sign flip (true disc flip)
     if (ps !== 0 && cs !== 0 && ps === -cs) {
       setFadeFrom(prev)
       setShowNew(false)
-      const t1 = setTimeout(() => setShowNew(true), 10)
-      const t2 = setTimeout(() => setFadeFrom(null), 520)
-      return () => { clearTimeout(t1); clearTimeout(t2) }
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+      if (clearRef.current != null) clearTimeout(clearRef.current)
+      rafRef.current = requestAnimationFrame(() => setShowNew(true))
+      clearRef.current = setTimeout(() => setFadeFrom(null), 500)
     }
     prevRef.current = cell
+    return () => {
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+      if (clearRef.current != null) clearTimeout(clearRef.current)
+    }
   }, [cell])
 
   return (
