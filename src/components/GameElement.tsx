@@ -157,7 +157,7 @@ export default function GameElement() {
             onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}
             style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 12px 16px', cursor: 'pointer' }}
           >
-            <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '2px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420, fontWeight: 700 }}>
               <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>【ルール】</div>
               <div style={{ fontSize: 18, lineHeight: 1.6 }}>
                 ① ひっくり返るたびに点数2倍<br />
@@ -213,7 +213,7 @@ export default function GameElement() {
       {/* Top panel area with fixed size to avoid layout shift (moved below board) */}
       <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '2px solid #bbb', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', fontWeight: 700 }}>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>ゲームスタート</button>
             <div>
               <span style={{ fontWeight: 700 }}>Player:</span>
@@ -233,7 +233,7 @@ export default function GameElement() {
                   style={{
                     padding: '8px 40px 8px 12px',
                     borderRadius: 12,
-                    border: '1px solid #ccc',
+                    border: '2px solid #bbb',
                     background: '#ffffff',
                     appearance: 'none',
                     WebkitAppearance: 'none',
@@ -254,9 +254,9 @@ export default function GameElement() {
             </div>
           </div>
         ) : ended ? (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '2px solid #bbb', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center', fontWeight: 700 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
-              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
+              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '2px solid #bbb', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
               <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
@@ -264,9 +264,9 @@ export default function GameElement() {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '2px solid #bbb', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center', fontWeight: 700 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
-              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
+              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '2px solid #bbb', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
               <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
