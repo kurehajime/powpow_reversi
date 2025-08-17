@@ -43,6 +43,26 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
           <CellElement key={index} cell={cell} x={x} y={y} cellSize={cellSize} hint={hints?.has(index)} hintColor={hintColor} isLast={lastIndex === index} />
         )
       })}
+      {/* corner star dots (2 cells from each corner) - draw above cells */}
+      {(() => {
+        const o = 2
+        // grid intersections are at integer multiples of cellSize (0..size)
+        const pts: Array<[number, number]> = [
+          [o, o],
+          [size - o, o],
+          [o, size - o],
+          [size - o, size - o],
+        ]
+        const r = Math.max(1, Math.floor(cellSize * 0.06))
+        const fill = 'rgba(255,255,255,0.30)'
+        return (
+          <g>
+            {pts.map(([gx, gy], idx) => (
+              <circle key={`star-${idx}`} cx={gx * cellSize} cy={gy * cellSize} r={r} fill={fill} />
+            ))}
+          </g>
+        )
+      })()}
     </svg>
   )
 }
