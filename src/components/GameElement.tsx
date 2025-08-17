@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
@@ -8,6 +8,15 @@ export default function GameElement() {
   const [field, setField] = useState<Field>(() => Field.Initial(8))
   const [status, setStatus] = useState<string>('')
   const turnLabel = field.Turn === 1 ? 'Black' : 'White'
+  const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
+  const hints = useMemo(() => {
+    const set = new Set<number>()
+    const cells = field.Cells
+    for (let i = 0; i < cells.length; i++) {
+      if (field.CanPlace(i)) set.add(i)
+    }
+    return set as ReadonlySet<number>
+  }, [field])
 
   // auto-pass when no legal moves for current player but opponent has moves
   useEffect(() => {
@@ -30,6 +39,8 @@ export default function GameElement() {
       <div style={{ marginBottom: 4 }}>Turn: {turnLabel} {status && ` / ${status}`}</div>
       <FieldElement
         field={field}
+        hints={hints}
+        hintColor={hintColor}
         onCellClick={(index) => {
           const next = field.Place(index)
           if (next !== field) {

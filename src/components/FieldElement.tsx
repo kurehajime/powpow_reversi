@@ -5,9 +5,11 @@ type Props = {
   field: Field
   cellSize?: number
   onCellClick?: (index: number) => void
+  hints?: ReadonlySet<number>
+  hintColor?: 'black' | 'white'
 }
 
-export default function FieldElement({ field, cellSize = 60, onCellClick }: Props) {
+export default function FieldElement({ field, cellSize = 60, onCellClick, hints, hintColor }: Props) {
   const size = field.Size()
   const dim = size * cellSize
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -32,7 +34,7 @@ export default function FieldElement({ field, cellSize = 60, onCellClick }: Prop
         const x = (index % size) * cellSize
         const y = Math.floor(index / size) * cellSize
         return (
-          <CellElement key={index} cell={cell} x={x} y={y} cellSize={cellSize} />
+          <CellElement key={index} cell={cell} x={x} y={y} cellSize={cellSize} hint={hints?.has(index)} hintColor={hintColor} />
         )
       })}
     </svg>

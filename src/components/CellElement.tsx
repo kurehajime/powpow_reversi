@@ -5,9 +5,11 @@ type Props = {
   x: number
   y: number
   cellSize: number
+  hint?: boolean
+  hintColor?: 'black' | 'white'
 }
 
-export default function CellElement({ cell, x, y, cellSize }: Props) {
+export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: Props) {
   const padding = Math.max(2, Math.floor(cellSize * 0.08))
   const cx = x + cellSize / 2
   const cy = y + cellSize / 2
@@ -18,6 +20,16 @@ export default function CellElement({ cell, x, y, cellSize }: Props) {
   return (
     <g>
       <rect x={x} y={y} width={cellSize} height={cellSize} fill="#2e7d32" stroke="#1b5e20" />
+      {/* hint dot for legal move on empty cell */}
+      {!isDisc && hint && (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={Math.max(3, r * 0.35)}
+          fill={hintColor === 'white' ? '#ffffff' : '#000000'}
+          opacity={0.35}
+        />
+      )}
       {isDisc && (
         <>
           <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="#000" />
