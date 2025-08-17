@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  /* html 要素の背景色をさらに低彩度の薄い茶色に */
+  /* html 要素の背景色を低彩度の薄い茶色に戻す */
   background-color: #f6f3f0;
 
   font-synthesis: none;
@@ -58,7 +58,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    /* ライトモードでも同じ低彩度の薄い茶色に */
+    /* ライトモードでも薄い茶色に戻す */
     background-color: #f6f3f0;
   }
   a:hover {

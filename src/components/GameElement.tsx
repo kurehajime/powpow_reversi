@@ -152,6 +152,17 @@ export default function GameElement() {
             }
           }}
         />
+        {!started && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 12px 16px' }}>
+            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420 }}>
+              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>【ルール】</div>
+              <div style={{ fontSize: 18, lineHeight: 1.6 }}>
+                ① ひっくり返るたびに点数2倍<br />
+                ② 1000点以上取った時点で勝利
+              </div>
+            </div>
+          </div>
+        )}
         {ended && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -196,8 +207,9 @@ export default function GameElement() {
       <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>ゲームスタート</button>
             <div>
-              Player:
+              <span style={{ fontWeight: 700 }}>Player:</span>
               <label style={{ marginLeft: 8 }}>
                 <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> Black
               </label>
@@ -206,7 +218,7 @@ export default function GameElement() {
               </label>
             </div>
             <div>
-              AI:
+              <span style={{ fontWeight: 700 }}>AI:</span>
               <div style={{ display: 'inline-block', position: 'relative', marginLeft: 8 }}>
                 <select
                   value={depth}
@@ -233,7 +245,6 @@ export default function GameElement() {
                 <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666' }}>▼</span>
               </div>
             </div>
-            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>開始</button>
           </div>
         ) : ended ? (
           <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
