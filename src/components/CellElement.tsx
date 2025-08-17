@@ -17,6 +17,10 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
   const isDisc = cell !== 0
   const isBlack = cell > 0
 
+  const digits = Math.abs(cell).toString().length
+  const baseFont = Math.max(10, r * 0.7)
+  const fontSize = digits <= 3 ? baseFont * 1.15 : (digits === 4 ? baseFont * 0.85 : baseFont)
+
   return (
     <g style={{ cursor: !isDisc && hint ? 'pointer' as const : 'default' }}>
       <rect x={x} y={y} width={cellSize} height={cellSize} fill="#2e7d32" stroke="#1b5e20" />
@@ -33,7 +37,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
       {isDisc && (
         <>
           <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="#000" />
-          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.max(10, r * 0.7)} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif'>
+          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
             {Math.abs(cell)}
           </text>
         </>
