@@ -21,6 +21,35 @@ export class Field {
     return Number.isInteger(n) ? n : 0
   }
 
+  // Scores
+  public Score(): { black: number, white: number } {
+    let black = 0, white = 0
+    for (const v of this._cells) {
+      if (v > 0) black += v
+      else if (v < 0) white += -v
+    }
+    return { black, white }
+  }
+
+  // Game end by score: either reaches 1000+
+  public IsEndByScore(): boolean {
+    const { black, white } = this.Score()
+    return black >= 1000 || white >= 1000
+  }
+
+  public WinnerByScore(): 1 | -1 | 0 {
+    const { black, white } = this.Score()
+    if (black >= 1000 && white >= 1000) {
+      // If both reached, higher wins; tie -> 0
+      if (black > white) return 1
+      if (white > black) return -1
+      return 0
+    }
+    if (black >= 1000) return 1
+    if (white >= 1000) return -1
+    return 0
+  }
+
   // Phase 1: provide an initial 8x8 board with the standard Othello starting position.
   // Stone points: initial placement is 2 points as per spec.
   public static Initial(size = 8): Field {

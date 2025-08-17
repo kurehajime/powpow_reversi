@@ -12,6 +12,11 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
   const beta0 = betaIn ?? 1_000_000_000
   const maximizing = field.Turn === 1 // Black maximizes, White minimizes
 
+  // terminal by score rule
+  if (field.IsEndByScore()) {
+    return { index: null, score: evaluate(field) }
+  }
+
   const legal = field.ListLegalMoves()
   // Pass node if no legal moves but opponent has moves
   if (legal.length === 0) {
@@ -58,4 +63,3 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
 
   return { index: bestIndex, score: bestScore }
 }
-
