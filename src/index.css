@@ -71,14 +71,16 @@ button:focus-visible {
 
 /* Responsive board/panel layout */
 .board-wrap {
+  position: relative;
   width: 100%;
-  max-width: 960px;
+  /* keep within viewport and cap for desktop */
+  max-width: clamp(320px, 85vmin, 500px);
   margin: 0 auto;
   box-shadow: 0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25);
 }
 .panel-wrap {
   width: 100%;
-  max-width: 960px;
+  max-width: clamp(320px, 85vmin, 500px);
   margin: 0 auto;
 }
 .board-svg {

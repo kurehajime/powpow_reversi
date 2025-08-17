@@ -15,7 +15,6 @@ export default function GameElement() {
   const [depth, setDepth] = useState<number>(1)
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
-  const boardSize = field.Size() * cellSize
   const topPanelHeight = 200
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const aiStrengthLabel = useMemo(() => {
@@ -115,7 +114,7 @@ export default function GameElement() {
       <h1 style={{ margin: 0, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
 
 
-      <div style={{ position: 'relative', width: boardSize, height: boardSize, boxShadow: '0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25)' }}>
+      <div className="board-wrap" style={{ boxShadow: '0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25)' }}>
         <FieldElement
           field={field}
           cellSize={cellSize}
@@ -168,7 +167,7 @@ export default function GameElement() {
       </div>
 
       {/* Top panel area with fixed size to avoid layout shift (moved below board) */}
-      <div style={{ width: boardSize, height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+      <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
             <div>
