@@ -15,6 +15,8 @@ export default function GameElement() {
   const turnLabel = field.Turn === 1 ? 'Black' : 'White'
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
+  const boardSize = field.Size() * cellSize
+  const topPanelHeight = 160
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const hints = useMemo(() => {
     const set = new Set<number>()
@@ -74,44 +76,46 @@ export default function GameElement() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
       <h1 style={{ margin: 0, fontSize: 24 }}>Pow Reversi</h1>
-      {/* Top panel area: replace ScoreElement depending on state */}
-      {!started ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: field.Size() * cellSize }}>
-          <div>
-            先手/後手:
-            <label style={{ marginLeft: 8 }}>
-              <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> 先手（黒・人間）
-            </label>
-            <label style={{ marginLeft: 8 }}>
-              <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> 後手（白・人間）
-            </label>
+      {/* Top panel area with fixed size to avoid layout shift */}
+      <div style={{ width: boardSize, height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+        {!started ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+            <div>
+              先手/後手:
+              <label style={{ marginLeft: 8 }}>
+                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> 先手（黒・人間）
+              </label>
+              <label style={{ marginLeft: 8 }}>
+                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> 後手（白・人間）
+              </label>
+            </div>
+            <div>
+              強さ:
+              <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
+                <option value={1}>1（速い）</option>
+                <option value={2}>2</option>
+                <option value={3}>3（標準）</option>
+                <option value={4}>4</option>
+                <option value={5}>5（強い）</option>
+              </select>
+            </div>
+            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
           </div>
-          <div>
-            強さ:
-            <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
-              <option value={1}>1（速い）</option>
-              <option value={2}>2</option>
-              <option value={3}>3（標準）</option>
-              <option value={4}>4</option>
-              <option value={5}>5（強い）</option>
-            </select>
+        ) : ended ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+            <div>{status}</div>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>同じ設定で再戦</button>
+              <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}>設定から再戦</button>
+            </div>
           </div>
-          <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
-        </div>
-      ) : ended ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: field.Size() * cellSize, background: 'rgba(255,255,255,0.75)' }}>
-          <div>{status}</div>
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>同じ設定で再戦</button>
-            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}>設定から再戦</button>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
+            <ScoreElement field={field} />
+            <div>Turn: {turnLabel} {status && ` / ${status}`}</div>
           </div>
-        </div>
-      ) : (
-        <>
-          <ScoreElement field={field} />
-          <div style={{ marginBottom: 4 }}>Turn: {turnLabel} {status && ` / ${status}`}</div>
-        </>
-      )}
+        )}
+      </div>
 
       <FieldElement
         field={field}
