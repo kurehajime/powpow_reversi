@@ -48,7 +48,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
 
   return (
     <g style={{ cursor: !isDisc && hint ? 'pointer' as const : 'default' }}>
-      <rect x={x} y={y} width={cellSize} height={cellSize} fill="#2e7d32" stroke="#1b5e20" />
+      <rect x={x} y={y} width={cellSize} height={cellSize} fill="seagreen" stroke="rgba(255, 255, 255, 0.07)" strokeWidth={1} />
       {/* hint dot for legal move on empty cell */}
       {!isDisc && hint && (
         <circle
