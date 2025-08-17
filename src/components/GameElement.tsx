@@ -93,7 +93,41 @@ export default function GameElement() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
       <h1 style={{ margin: 0, fontSize: 24 }}>Pow Reversi</h1>
-      {/* Top panel area with fixed size to avoid layout shift */}
+      
+
+      <div style={{ position: 'relative', width: boardSize, height: boardSize }}>
+        <FieldElement
+          field={field}
+          cellSize={cellSize}
+          hints={hints}
+          hintColor={hintColor}
+          onCellClick={(index) => {
+            if (!started || ended) return
+            if (field.Turn !== humanSide) return
+            if (field.IsEndByScore()) return
+            const next = field.Place(index)
+            if (next !== field) {
+              setStatus('')
+              setField(next)
+            }
+          }}
+        />
+        {ended && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
+            <div style={{
+              fontSize: 48,
+              fontWeight: 800,
+              color: resultText === 'YOU WIN' ? '#64b5f6' : resultText === 'YOU LOSE' ? '#ff5252' : '#ffd740',
+              letterSpacing: 2,
+              textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+            }}>
+              {resultText}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Top panel area with fixed size to avoid layout shift (moved below board) */}
       <div style={{ width: boardSize, height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center' }}>
@@ -132,38 +166,6 @@ export default function GameElement() {
             <ScoreElement field={field} />
             <div>Turn: {turnLabel} {status && ` / ${status}`}</div>
             <div>AI強さ: {aiStrengthLabel}</div>
-          </div>
-        )}
-      </div>
-
-      <div style={{ position: 'relative', width: boardSize, height: boardSize }}>
-        <FieldElement
-          field={field}
-          cellSize={cellSize}
-          hints={hints}
-          hintColor={hintColor}
-          onCellClick={(index) => {
-            if (!started || ended) return
-            if (field.Turn !== humanSide) return
-            if (field.IsEndByScore()) return
-            const next = field.Place(index)
-            if (next !== field) {
-              setStatus('')
-              setField(next)
-            }
-          }}
-        />
-        {ended && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
-            <div style={{
-              fontSize: 48,
-              fontWeight: 800,
-              color: resultText === 'YOU WIN' ? '#64b5f6' : resultText === 'YOU LOSE' ? '#ff5252' : '#ffd740',
-              letterSpacing: 2,
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-            }}>
-              {resultText}
-            </div>
           </div>
         )}
       </div>
