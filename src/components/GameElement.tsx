@@ -16,8 +16,18 @@ export default function GameElement() {
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
   const boardSize = field.Size() * cellSize
-  const topPanelHeight = 160
+  const topPanelHeight = 200
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
+  const aiStrengthLabel = useMemo(() => {
+    switch (depth) {
+      case 0: return 'ひよこ'
+      case 1: return 'ウサギ'
+      case 2: return 'ネコ'
+      case 3: return 'オオカミ'
+      case 4: return 'ライオン'
+      case 5: return 'ドラゴン'
+    }
+  }, [depth])
   const resultText = useMemo(() => {
     if (!ended) return ''
     const { black, white } = field.Score()
@@ -99,12 +109,12 @@ export default function GameElement() {
             <div>
               強さ:
               <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
-                <option value={0}>0（ひよこ）</option>
-                <option value={1}>1（ウサギ）</option>
-                <option value={2}>2（ネコ）</option>
-                <option value={3}>3（オオカミ）</option>
-                <option value={4}>4（ライオン）</option>
-                <option value={5}>5（ドラゴン）</option>
+                <option value={0}>ひよこ</option>
+                <option value={1}>ウサギ</option>
+                <option value={2}>ネコ</option>
+                <option value={3}>オオカミ</option>
+                <option value={4}>ライオン</option>
+                <option value={5}>ドラゴン</option>
               </select>
             </div>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
@@ -112,6 +122,7 @@ export default function GameElement() {
         ) : ended ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <div>{status}</div>
+            <div>AI強さ: {aiStrengthLabel}</div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
               <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}>再挑戦</button>
             </div>
@@ -120,6 +131,7 @@ export default function GameElement() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
             <ScoreElement field={field} />
             <div>Turn: {turnLabel} {status && ` / ${status}`}</div>
+            <div>AI強さ: {aiStrengthLabel}</div>
           </div>
         )}
       </div>
