@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion } from 'motion/react'
 import type { Cell } from '../model/types'
 
 type Props = {
@@ -27,26 +28,20 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
 
   // flip fade animation
   const prevRef = useRef<Cell>(cell)
-  const rafRef = useRef<number | null>(null)
   const clearRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [fadeFrom, setFadeFrom] = useState<Cell | null>(null)
-  const [showNew, setShowNew] = useState<boolean>(true)
+  const [flipFrom, setFlipFrom] = useState<Cell | null>(null)
   useEffect(() => {
     const prev = prevRef.current
     const ps = prev === 0 ? 0 : prev > 0 ? 1 : -1
     const cs = cell === 0 ? 0 : cell > 0 ? 1 : -1
-    // trigger fade only on sign flip (true disc flip)
+    // trigger flip only on sign flip (true disc flip)
     if (ps !== 0 && cs !== 0 && ps === -cs) {
-      setFadeFrom(prev)
-      setShowNew(false)
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
-      if (clearRef.current != null) clearTimeout(clearRef.current)
-      rafRef.current = requestAnimationFrame(() => setShowNew(true))
-      clearRef.current = setTimeout(() => setFadeFrom(null), 500)
+      if (clearRef.current) clearTimeout(clearRef.current)
+      setFlipFrom(prev)
+      clearRef.current = setTimeout(() => setFlipFrom(null), 500)
     }
     prevRef.current = cell
     return () => {
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
       if (clearRef.current != null) clearTimeout(clearRef.current)
     }
   }, [cell])
@@ -64,7 +59,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
           opacity={0.35}
         />
       )}
-      {isDisc && fadeFrom === null && (
+      {isDisc && flipFrom === null && (
         <>
           <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
           {isLast && (
@@ -75,29 +70,39 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
           </text>
         </>
       )}
-      {isDisc && fadeFrom !== null && (
+      {isDisc && flipFrom !== null && (
         <>
-          {/* previous disc fading out */}
+          {/* previous disc scales X to 0 */}
           {(() => {
-            const prevBlack = fadeFrom > 0
+            const prevBlack = flipFrom > 0
             const prevStroke = prevBlack ? '#222222' : '#eeeeee'
-            const prevDigits = Math.abs(fadeFrom).toString().length
+            const prevDigits = Math.abs(flipFrom).toString().length
             const prevFont = Math.max(10, r * 0.7)
             const prevSize = prevDigits <= 3 ? prevFont * 1.15 : (prevDigits === 4 ? prevFont * 0.85 : prevFont)
             return (
-              <g style={{ opacity: showNew ? 0 : 1, transition: 'opacity 500ms ease' }}>
+              <motion.g
+                initial={{ scaleX: 1 }}
+                animate={{ scaleX: 0 }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
+              >
                 <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} />
                 {isLast && (
                   <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
                 )}
                 <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
-                  {Math.abs(fadeFrom)}
+                  {Math.abs(flipFrom)}
                 </text>
-              </g>
+              </motion.g>
             )
           })()}
-          {/* current disc fading in */}
-          <g style={{ opacity: showNew ? 1 : 0, transition: 'opacity 500ms ease' }}>
+          {/* current disc scales X from 0 to 1 */}
+          <motion.g
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
+          >
             <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
             {isLast && (
               <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
@@ -105,7 +110,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
             <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
               {Math.abs(cell)}
             </text>
-          </g>
+          </motion.g>
         </>
       )}
     </g>
