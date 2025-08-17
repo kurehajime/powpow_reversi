@@ -15,15 +15,23 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
   const dim = size * cellSize
   const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (!onCellClick) return
-    const x = (e.nativeEvent as MouseEvent).offsetX
-    const y = (e.nativeEvent as MouseEvent).offsetY
-    const ix = Math.floor(x / cellSize)
-    const iy = Math.floor(y / cellSize)
+    const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const ix = Math.floor(x / (rect.width / size))
+    const iy = Math.floor(y / (rect.height / size))
     const index = ix + iy * size
     onCellClick(index)
   }
   return (
-    <svg width={dim} height={dim} role="img" aria-label="board" onClick={handleClick}>
+    <svg
+      className="board-svg"
+      viewBox={`0 0 ${dim} ${dim}`}
+      role="img"
+      aria-label="board"
+      onClick={handleClick}
+      preserveAspectRatio="xMidYMid meet"
+    >
       <defs>
         <filter id="discShadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1.5" stdDeviation="1.0" flood-color="rgba(0,0,0,0.4)" />

@@ -68,3 +68,27 @@ button:focus-visible {
     border-color: #000;
   }
 }
+
+/* Responsive board/panel layout */
+.board-wrap {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25);
+}
+.panel-wrap {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.board-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@media (max-width: 768px) {
+  .board-wrap,
+  .panel-wrap {
+    max-width: calc(100vw - 24px);
+  }
+}
