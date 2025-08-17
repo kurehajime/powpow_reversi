@@ -3,7 +3,6 @@ import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
 import { thinkAlphaBeta } from '../ai/AlphaBeta'
-import Modal from './Modal'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -15,6 +14,7 @@ export default function GameElement() {
   const [depth, setDepth] = useState<number>(3)
   const turnLabel = field.Turn === 1 ? 'Black' : 'White'
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
+  const cellSize = 60
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const hints = useMemo(() => {
     const set = new Set<number>()
@@ -74,27 +74,9 @@ export default function GameElement() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
       <h1 style={{ margin: 0, fontSize: 24 }}>Pow Reversi</h1>
-      <ScoreElement field={field} />
-      <div style={{ marginBottom: 4 }}>Turn: {turnLabel} {status && ` / ${status}`}</div>
-      <FieldElement
-        field={field}
-        hints={hints}
-        hintColor={hintColor}
-        onCellClick={(index) => {
-          if (!started || ended) return
-          if (field.Turn !== humanSide) return
-          if (field.IsEndByScore()) return
-          const next = field.Place(index)
-          if (next !== field) {
-            setStatus('')
-            setField(next)
-          }
-        }}
-      />
-
-      {/* Start Modal */}
-      <Modal show={!started} title="ゲーム開始">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* Top panel area: replace ScoreElement depending on state */}
+      {!started ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: field.Size() * cellSize }}>
           <div>
             先手/後手:
             <label style={{ marginLeft: 8 }}>
@@ -116,18 +98,37 @@ export default function GameElement() {
           </div>
           <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
         </div>
-      </Modal>
-
-      {/* Replay Modal */}
-      <Modal show={ended} title="試合終了">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      ) : ended ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: field.Size() * cellSize, background: 'rgba(255,255,255,0.75)' }}>
           <div>{status}</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>同じ設定で再戦</button>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}>設定から再戦</button>
           </div>
         </div>
-      </Modal>
+      ) : (
+        <>
+          <ScoreElement field={field} />
+          <div style={{ marginBottom: 4 }}>Turn: {turnLabel} {status && ` / ${status}`}</div>
+        </>
+      )}
+
+      <FieldElement
+        field={field}
+        cellSize={cellSize}
+        hints={hints}
+        hintColor={hintColor}
+        onCellClick={(index) => {
+          if (!started || ended) return
+          if (field.Turn !== humanSide) return
+          if (field.IsEndByScore()) return
+          const next = field.Place(index)
+          if (next !== field) {
+            setStatus('')
+            setField(next)
+          }
+        }}
+      />
     </div>
   )
 }
