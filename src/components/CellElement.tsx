@@ -33,7 +33,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
       {isDisc && (
         <>
           <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="#000" />
-          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.max(10, r * 0.7)} fill={isBlack ? '#fff' : '#111'}>
+          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={Math.max(10, r * 0.7)} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif'>
             {Math.abs(cell)}
           </text>
         </>

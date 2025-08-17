@@ -108,7 +108,7 @@ export default function GameElement() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-      <h1 style={{ margin: 0, fontSize: 24 }}>Pow Reversi</h1>
+      <h1 style={{ margin: 0, fontSize: 24, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>Pow Reversi</h1>
       
 
       <div style={{ position: 'relative', width: boardSize, height: boardSize }}>
@@ -135,7 +135,8 @@ export default function GameElement() {
                 fontSize: 64,
                 fontWeight: 800,
                 color: hexToRgba(resultColor, 0.85),
-                letterSpacing: 2
+                letterSpacing: 2,
+                fontFamily: '"Rubik Mono One", system-ui, sans-serif'
               }}>
                 {resultText}
               </div>
@@ -148,7 +149,9 @@ export default function GameElement() {
                   borderRadius: 14,
                   backgroundColor: hexToRgba(resultColor, 0.7),
                   color: '#fff',
-                  border: 'none'
+                  border: 'none',
+                  fontFamily: '"Rubik Mono One", system-ui, sans-serif',
+                  letterSpacing: 1
                 }}
               >
                 NEW GAME
