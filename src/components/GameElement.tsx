@@ -99,8 +99,11 @@ export default function GameElement() {
     const { index } = (depth === 0 ? thinkGreedy(field) : thinkAlphaBeta(field, depth))
     if (index != null) {
       const next = field.Place(index)
-      setStatus('')
-      setField(next)
+      const timer = setTimeout(() => {
+        setStatus('')
+        setField(next)
+      }, 750)
+      return () => clearTimeout(timer)
     } else {
       setStatus('')
     }
