@@ -8,6 +8,7 @@ export default function GameElement() {
   // Phase 2: interactive board with alternating turns
   const [field, setField] = useState<Field>(() => Field.Initial(8))
   const [status, setStatus] = useState<string>('')
+  const [lastIndex, setLastIndex] = useState<number | null>(null)
   const [started, setStarted] = useState<boolean>(false)
   const [ended, setEnded] = useState<boolean>(false)
   const [humanSide, setHumanSide] = useState<1 | -1>(1) // 1=黒(先手), -1=白(後手)
@@ -101,6 +102,7 @@ export default function GameElement() {
       const next = field.Place(index)
       const timer = setTimeout(() => {
         setStatus('')
+        setLastIndex(index)
         setField(next)
       }, 750)
       return () => clearTimeout(timer)
@@ -120,6 +122,7 @@ export default function GameElement() {
           cellSize={cellSize}
           hints={hints}
           hintColor={hintColor}
+          lastIndex={lastIndex}
           onCellClick={(index) => {
             if (!started || ended) return
             if (field.Turn !== humanSide) return
@@ -127,6 +130,7 @@ export default function GameElement() {
             const next = field.Place(index)
             if (next !== field) {
               setStatus('')
+              setLastIndex(index)
               setField(next)
             }
           }}
@@ -144,7 +148,7 @@ export default function GameElement() {
                 {resultText}
               </div>
               <button
-                onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}
+                onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null) }}
                 style={{
                   fontSize: 24,
                   fontWeight: 900,
@@ -188,7 +192,7 @@ export default function GameElement() {
                 <option value={5}>ドラゴン</option>
               </select>
             </div>
-            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
+            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>開始</button>
           </div>
         ) : ended ? (
           <div style={{ display: 'flex', flexDirection: 'row', gap: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>

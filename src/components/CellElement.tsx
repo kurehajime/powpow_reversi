@@ -8,9 +8,10 @@ type Props = {
   cellSize: number
   hint?: boolean
   hintColor?: 'black' | 'white'
+  isLast?: boolean
 }
 
-export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: Props) {
+export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isLast }: Props) {
   const padding = Math.max(2, Math.floor(cellSize * 0.08))
   const cx = x + cellSize / 2
   const cy = y + cellSize / 2
@@ -58,6 +59,9 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
       {isDisc && fadeFrom === null && (
         <>
           <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
+          {isLast && (
+            <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+          )}
           <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
             {Math.abs(cell)}
           </text>
@@ -75,6 +79,9 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
             return (
               <g style={{ opacity: showNew ? 0 : 1, transition: 'opacity 500ms ease' }}>
                 <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} />
+                {isLast && (
+                  <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+                )}
                 <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
                   {Math.abs(fadeFrom)}
                 </text>
@@ -84,6 +91,9 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
           {/* current disc fading in */}
           <g style={{ opacity: showNew ? 1 : 0, transition: 'opacity 500ms ease' }}>
             <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
+            {isLast && (
+              <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+            )}
             <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
               {Math.abs(cell)}
             </text>
