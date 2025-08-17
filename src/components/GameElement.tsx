@@ -95,7 +95,6 @@ export default function GameElement() {
     if (field.IsEndByScore()) return
     if (field.Turn !== cpuSide) return
     if (!field.HasAnyMove()) return
-    setStatus('CPU考え中...')
     // 同期で十分。必要ならsetTimeoutで遅延演出可能
     const { index } = (depth === 0 ? thinkGreedy(field) : thinkAlphaBeta(field, depth))
     if (index != null) {
@@ -116,7 +115,7 @@ export default function GameElement() {
       <h1 style={{ margin: 0, fontSize: 24, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>Pow Reversi</h1>
       
 
-      <div style={{ position: 'relative', width: boardSize, height: boardSize }}>
+      <div style={{ position: 'relative', width: boardSize, height: boardSize, boxShadow: '0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25)' }}>
         <FieldElement
           field={field}
           cellSize={cellSize}

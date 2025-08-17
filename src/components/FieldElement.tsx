@@ -24,6 +24,11 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
   }
   return (
     <svg width={dim} height={dim} role="img" aria-label="board" onClick={handleClick}>
+      <defs>
+        <filter id="discShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.0" flood-color="rgba(0,0,0,0.4)" />
+        </filter>
+      </defs>
       {/* grid lines */}
       {[...Array(size + 1)].map((_, i) => (
         <line key={`v-${i}`} x1={i * cellSize} y1={0} x2={i * cellSize} y2={dim} stroke="rgba(255, 255, 255, 0.07)" />

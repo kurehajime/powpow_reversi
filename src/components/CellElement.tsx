@@ -61,7 +61,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
       )}
       {isDisc && flipFrom === null && (
         <>
-          <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
+          <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
           {isLast && (
             <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
           )}
@@ -86,7 +86,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
                 style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
               >
-                <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} />
+                <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} filter="url(#discShadow)" />
                 {isLast && (
                   <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
                 )}
@@ -103,7 +103,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
           >
-            <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
+            <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
             {isLast && (
               <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
             )}
