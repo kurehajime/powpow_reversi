@@ -21,7 +21,7 @@ export default function GameElement() {
   const [depth, setDepth] = useState<number>(1)
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
-  const topPanelHeight = 200
+  const topPanelHeight = 160
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const aiStrengthLabel = useMemo(() => {
     switch (depth) {
@@ -183,6 +183,13 @@ export default function GameElement() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* 盤面の下にルールの Marquee */}
+      <div className="panel-wrap" style={{ marginTop: 4 }}>
+        <div style={{ fontSize: 14, color: '#444' }}>
+          【ルール】①ひっくり返るたびに点数2倍 ②1000点以上取った時点で勝利
+        </div>
       </div>
 
       {/* Top panel area with fixed size to avoid layout shift (moved below board) */}
