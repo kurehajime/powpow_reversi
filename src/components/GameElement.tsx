@@ -8,7 +8,7 @@ import lv5Img from '../assets/lv5.png'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
-import { thinkAlphaBeta, thinkGreedy } from '../ai/AlphaBeta'
+import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -114,7 +114,11 @@ export default function GameElement() {
     if (field.Turn !== cpuSide) return
     if (!field.HasAnyMove()) return
     // 同期で十分。必要ならsetTimeoutで遅延演出可能
-    const { index } = (depth === 0 ? thinkGreedy(field) : thinkAlphaBeta(field, depth))
+    // レベル0〜3は簡易評価（Cellsの総和）を使用して弱めのプレイにする
+    const useEasyEval = depth <= 3
+    const { index } = (depth === 0
+      ? thinkGreedy(field, useEasyEval ? evaluateEasy : undefined)
+      : thinkAlphaBeta(field, depth, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
     if (index != null) {
       const next = field.Place(index)
       const timer = setTimeout(() => {

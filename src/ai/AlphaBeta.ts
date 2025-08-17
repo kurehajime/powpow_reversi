@@ -55,30 +55,44 @@ function evaluate(field: Field): number {
   return pointScore + terrainScore
 }
 
-export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, betaIn?: number): AiResult {
+// 簡易評価（レベル0〜3向け）
+// Cells の総和（黒=+、白=-）のみで評価する。
+// 位置や到達ボーナスを含めないため、弱いプレイになる想定。
+export function evaluateEasy(field: Field): number {
+  return field.Cells.reduce((s, v) => s + v, 0)
+}
+
+// 評価関数を差し替え可能にするため、evalFn をオプション引数で受け取る
+export function thinkAlphaBeta(
+  field: Field,
+  depth: number,
+  alphaIn?: number,
+  betaIn?: number,
+  evalFn: (f: Field) => number = evaluate,
+): AiResult {
   const alpha0 = alphaIn ?? -1_000_000_000
   const beta0 = betaIn ?? 1_000_000_000
   const maximizing = field.Turn === 1 // Black maximizes, White minimizes
 
   // terminal by score rule
   if (field.IsEndByScore()) {
-    return { index: null, score: evaluate(field) }
+    return { index: null, score: evalFn(field) }
   }
 
   const legal = field.ListLegalMoves()
   // Pass node if no legal moves but opponent has moves
   if (legal.length === 0) {
     if (field.HasAnyMoveFor(field.Turn === 1 ? -1 : 1)) {
-      if (depth <= 0) return { index: null, score: evaluate(field) }
-      return { index: null, score: thinkAlphaBeta(field.Pass(), depth - 1, alpha0, beta0).score }
+      if (depth <= 0) return { index: null, score: evalFn(field) }
+      return { index: null, score: thinkAlphaBeta(field.Pass(), depth - 1, alpha0, beta0, evalFn).score }
     }
     // Both cannot move: terminal
-    return { index: null, score: evaluate(field) }
+    return { index: null, score: evalFn(field) }
   }
 
   // Depth 0: stop search and return static evaluation of this node
   if (depth <= 0) {
-    return { index: null, score: evaluate(field) }
+    return { index: null, score: evalFn(field) }
   }
 
   let bestIndex: number | null = null
@@ -88,7 +102,7 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
 
   for (const idx of legal) {
     const child = field.Place(idx)
-    const { score } = thinkAlphaBeta(child, depth - 1, alpha, beta)
+    const { score } = thinkAlphaBeta(child, depth - 1, alpha, beta, evalFn)
     if (bestIndex === null) {
       bestIndex = idx
       bestScore = score
@@ -114,14 +128,14 @@ export function thinkAlphaBeta(field: Field, depth: number, alphaIn?: number, be
 }
 
 // One-ply greedy move: pick the child with best static score
-export function thinkGreedy(field: Field): AiResult {
+export function thinkGreedy(field: Field, evalFn: (f: Field) => number = evaluate): AiResult {
   const legal = field.ListLegalMoves()
-  if (legal.length === 0) return { index: null, score: evaluate(field) }
+  if (legal.length === 0) return { index: null, score: evalFn(field) }
   const maximizing = field.Turn === 1
   let bestIndex: number | null = null
   let bestScore = maximizing ? -1_000_000_000 : 1_000_000_000
   for (const idx of legal) {
-    const sc = evaluate(field.Place(idx))
+    const sc = evalFn(field.Place(idx))
     if (bestIndex === null) { bestIndex = idx; bestScore = sc }
     else if (maximizing ? sc > bestScore : sc < bestScore) { bestIndex = idx; bestScore = sc }
   }
