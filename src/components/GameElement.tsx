@@ -153,8 +153,11 @@ export default function GameElement() {
           }}
         />
         {!started && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 12px 16px' }}>
-            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420 }}>
+          <div
+            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 12px 16px', cursor: 'pointer' }}
+          >
+            <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '1px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420 }}>
               <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>【ルール】</div>
               <div style={{ fontSize: 18, lineHeight: 1.6 }}>
                 ① ひっくり返るたびに点数2倍<br />
@@ -164,8 +167,11 @@ export default function GameElement() {
           </div>
         )}
         {ended && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div
+            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null) }}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+          >
+            <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <div style={{
                 fontSize: 64,
                 fontWeight: 800,
@@ -176,6 +182,7 @@ export default function GameElement() {
                 {resultText}
               </div>
               <button
+                className="btn-pulse"
                 onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null) }}
                 style={{
                   fontSize: 24,

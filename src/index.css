@@ -50,6 +50,20 @@ button:hover {
   border-color: #222;
   opacity: 0.9;
 }
+
+/* NEW GAME 強調用の軽いパルスアニメーション */
+@keyframes pulse-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+.btn-pulse {
+  animation: pulse-scale 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-pulse { animation: none; }
+}
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
