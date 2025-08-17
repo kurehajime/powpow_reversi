@@ -11,7 +11,7 @@ export default function GameElement() {
   const [started, setStarted] = useState<boolean>(false)
   const [ended, setEnded] = useState<boolean>(false)
   const [humanSide, setHumanSide] = useState<1 | -1>(1) // 1=黒(先手), -1=白(後手)
-  const [depth, setDepth] = useState<number>(3)
+  const [depth, setDepth] = useState<number>(1)
   const turnLabel = field.Turn === 1 ? 'Black' : 'White'
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
@@ -90,20 +90,20 @@ export default function GameElement() {
             <div>
               先手/後手:
               <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> 先手（黒・人間）
+                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> 先手（黒）
               </label>
               <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> 後手（白・人間）
+                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> 後手（白）
               </label>
             </div>
             <div>
               強さ:
               <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
-                <option value={1}>1（速い）</option>
-                <option value={2}>2</option>
-                <option value={3}>3（標準）</option>
-                <option value={4}>4</option>
-                <option value={5}>5（強い）</option>
+                <option value={1}>1（ひよこ）</option>
+                <option value={2}>2（ウサギ）</option>
+                <option value={3}>3（オオカミ）</option>
+                <option value={4}>4（ライオン）</option>
+                <option value={5}>5（ドラゴン）</option>
               </select>
             </div>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
