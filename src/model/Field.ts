@@ -44,6 +44,27 @@ export class Field {
     return this.getFlips(index, this._turn).length > 0
   }
 
+  // Whether current player has any legal move
+  public HasAnyMove(): boolean {
+    for (let i = 0; i < this._cells.length; i++) {
+      if (this._cells[i] === 0 && this.getFlips(i, this._turn).length > 0) return true
+    }
+    return false
+  }
+
+  // Whether specified player has any legal move
+  public HasAnyMoveFor(turn: 1 | -1): boolean {
+    for (let i = 0; i < this._cells.length; i++) {
+      if (this._cells[i] === 0 && this.getFlips(i, turn).length > 0) return true
+    }
+    return false
+  }
+
+  // Pass (swap turn)
+  public Pass(): Field {
+    return new Field(this._cells, this._turn === 1 ? -1 : 1)
+  }
+
   // Place a stone for current player if valid; otherwise returns self
   public Place(index: number): Field {
     if (!this.CanPlace(index)) return this
