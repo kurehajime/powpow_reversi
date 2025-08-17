@@ -18,7 +18,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
   const isBlack = cell > 0
 
   return (
-    <g>
+    <g style={{ cursor: !isDisc && hint ? 'pointer' as const : 'default' }}>
       <rect x={x} y={y} width={cellSize} height={cellSize} fill="#2e7d32" stroke="#1b5e20" />
       {/* hint dot for legal move on empty cell */}
       {!isDisc && hint && (
