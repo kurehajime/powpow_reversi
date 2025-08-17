@@ -90,6 +90,7 @@ button:focus-visible {
 @media (max-width: 768px) {
   .board-wrap,
   .panel-wrap {
-    max-width: calc(100vw - 24px);
+    width: calc(100% - 24px);
+    max-width: none;
   }
 }
