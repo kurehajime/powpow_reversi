@@ -4,13 +4,23 @@ import CellElement from './CellElement'
 type Props = {
   field: Field
   cellSize?: number
+  onCellClick?: (index: number) => void
 }
 
-export default function FieldElement({ field, cellSize = 60 }: Props) {
+export default function FieldElement({ field, cellSize = 60, onCellClick }: Props) {
   const size = field.Size()
   const dim = size * cellSize
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!onCellClick) return
+    const x = (e.nativeEvent as MouseEvent).offsetX
+    const y = (e.nativeEvent as MouseEvent).offsetY
+    const ix = Math.floor(x / cellSize)
+    const iy = Math.floor(y / cellSize)
+    const index = ix + iy * size
+    onCellClick(index)
+  }
   return (
-    <svg width={dim} height={dim} role="img" aria-label="board">
+    <svg width={dim} height={dim} role="img" aria-label="board" onClick={handleClick}>
       {/* grid lines */}
       {[...Array(size + 1)].map((_, i) => (
         <>
