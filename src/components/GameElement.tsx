@@ -12,7 +12,6 @@ export default function GameElement() {
   const [ended, setEnded] = useState<boolean>(false)
   const [humanSide, setHumanSide] = useState<1 | -1>(1) // 1=黒(先手), -1=白(後手)
   const [depth, setDepth] = useState<number>(1)
-  const turnLabel = field.Turn === 1 ? 'Black' : 'White'
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
   const boardSize = field.Size() * cellSize
@@ -35,6 +34,23 @@ export default function GameElement() {
     if (winner === 0) return 'DRAW'
     return winner === humanSide ? 'YOU WIN' : 'YOU LOSE'
   }, [ended, field, humanSide])
+  const resultColor = useMemo(() => {
+    if (!ended) return '#000'
+    // Brighter and more saturated variants
+    return resultText === 'YOU WIN' ? '#4FC3F7' // vivid light blue
+      : resultText === 'YOU LOSE' ? '#FF5252'  // vivid red
+      : '#FFD740'                               // vivid amber (draw)
+  }, [ended, resultText])
+  const hexToRgba = (hex: string, alpha: number): string => {
+    const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex)
+    if (!m) return hex
+    const r = parseInt(m[1], 16)
+    const g = parseInt(m[2], 16)
+    const b = parseInt(m[3], 16)
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+  // Always show AI side avatar (🤖) regardless of turn or result
+  const bigAvatarChar = useMemo(() => (started ? '🤖' : ''), [started])
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
@@ -114,14 +130,29 @@ export default function GameElement() {
         />
         {ended && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
-            <div style={{
-              fontSize: 48,
-              fontWeight: 800,
-              color: resultText === 'YOU WIN' ? '#64b5f6' : resultText === 'YOU LOSE' ? '#ff5252' : '#ffd740',
-              letterSpacing: 2,
-              textShadow: '0 2px 4px rgba(0,0,0,0.5)'
-            }}>
-              {resultText}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                fontSize: 64,
+                fontWeight: 800,
+                color: hexToRgba(resultColor, 0.85),
+                letterSpacing: 2
+              }}>
+                {resultText}
+              </div>
+              <button
+                onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}
+                style={{
+                  fontSize: 24,
+                  fontWeight: 900,
+                  padding: '14px 28px',
+                  borderRadius: 14,
+                  backgroundColor: hexToRgba(resultColor, 0.7),
+                  color: '#fff',
+                  border: 'none'
+                }}
+              >
+                NEW GAME
+              </button>
             </div>
           </div>
         )}
@@ -154,18 +185,21 @@ export default function GameElement() {
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true) }}>開始</button>
           </div>
         ) : ended ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <div>{status}</div>
-            <div>AI強さ: {aiStrengthLabel}</div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false) }}>再挑戦</button>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+            <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
+              <ScoreElement field={field} />
+              <div>AI強さ: {aiStrengthLabel}</div>
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-            <ScoreElement field={field} />
-            <div>Turn: {turnLabel} {status && ` / ${status}`}</div>
-            <div>AI強さ: {aiStrengthLabel}</div>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+            <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
+              <ScoreElement field={field} />
+              <div>{status}</div>
+              <div>AI強さ: {aiStrengthLabel}</div>
+            </div>
           </div>
         )}
       </div>
