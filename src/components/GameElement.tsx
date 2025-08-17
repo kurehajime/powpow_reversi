@@ -206,7 +206,7 @@ export default function GameElement() {
       {/* 盤面の下にルールの Marquee */}
       <div className="panel-wrap" style={{ marginTop: 4 }}>
         <div style={{ fontSize: 14, color: '#444' }}>
-          【ルール】①ひっくり返るたびに点数2倍 ②1000点以上取った時点で勝利
+          【ルール】✅ひっくり返るたびに点数2倍 ✅1000点以上取った時点で勝利
         </div>
       </div>
 
