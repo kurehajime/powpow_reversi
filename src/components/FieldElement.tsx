@@ -23,14 +23,7 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
     onCellClick(index)
   }
   return (
-    <svg
-      viewBox={`0 0 ${dim} ${dim}`}
-      role="img"
-      aria-label="board"
-      onClick={handleClick}
-      style={{ width: '100%', height: 'auto', display: 'block' }}
-      preserveAspectRatio="xMidYMid meet"
-    >
+    <svg width={dim} height={dim} role="img" aria-label="board" onClick={handleClick}>
       <defs>
         <filter id="discShadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1.5" stdDeviation="1.0" flood-color="rgba(0,0,0,0.4)" />
