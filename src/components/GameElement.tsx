@@ -114,7 +114,7 @@ export default function GameElement() {
       <h1 style={{ margin: 0, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
 
 
-      <div className="board-wrap" style={{ boxShadow: '0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25)' }}>
+      <div className="board-wrap">
         <FieldElement
           field={field}
           cellSize={cellSize}
