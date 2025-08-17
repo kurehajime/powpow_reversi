@@ -110,8 +110,8 @@ export default function GameElement() {
   }, [field, started, ended, cpuSide, depth])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-      <h1 style={{ margin: 0, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
 
 
       <div className="board-wrap">
@@ -135,7 +135,7 @@ export default function GameElement() {
         />
         {ended && (
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <div style={{
                 fontSize: 64,
                 fontWeight: 800,
@@ -210,7 +210,7 @@ export default function GameElement() {
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>開始</button>
           </div>
         ) : ended ? (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, background: 'rgba(255,255,255,0.75)', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
             <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
               <ScoreElement field={field} />
@@ -218,7 +218,7 @@ export default function GameElement() {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 12, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '1px solid #ccc', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center' }}>
             <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
               <ScoreElement field={field} />
