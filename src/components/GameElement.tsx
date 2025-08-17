@@ -20,12 +20,12 @@ export default function GameElement() {
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const aiStrengthLabel = useMemo(() => {
     switch (depth) {
-      case 0: return 'ひよこ'
-      case 1: return 'ウサギ'
-      case 2: return 'ネコ'
-      case 3: return 'オオカミ'
-      case 4: return 'ライオン'
-      case 5: return 'ドラゴン'
+      case 0: return 'Lv.0 ひよこ'
+      case 1: return 'Lv.1 ウサギ'
+      case 2: return 'Lv.2 ネコ'
+      case 3: return 'Lv.3 オオカミ'
+      case 4: return 'Lv.4 ライオン'
+      case 5: return 'Lv.5 ドラゴン'
     }
   }, [depth])
   const resultText = useMemo(() => {
@@ -40,7 +40,7 @@ export default function GameElement() {
     // Brighter and more saturated variants
     return resultText === 'YOU WIN' ? '#4FC3F7' // vivid light blue
       : resultText === 'YOU LOSE' ? '#FF5252'  // vivid red
-      : '#FFD740'                               // vivid amber (draw)
+        : '#FFD740'                               // vivid amber (draw)
   }, [ended, resultText])
   const hexToRgba = (hex: string, alpha: number): string => {
     const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex)
@@ -112,8 +112,8 @@ export default function GameElement() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-      <h1 style={{ margin: 0, fontSize: 24, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>Pow Reversi</h1>
-      
+      <h1 style={{ margin: 0, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
+
 
       <div style={{ position: 'relative', width: boardSize, height: boardSize, boxShadow: '0 16px 64px rgba(0,0,0,0.45), 0 0 40px rgba(0,0,0,0.25)' }}>
         <FieldElement
@@ -182,14 +182,31 @@ export default function GameElement() {
             </div>
             <div>
               強さ:
-              <select value={depth} onChange={(e) => setDepth(Number(e.target.value))} style={{ marginLeft: 8 }}>
-                <option value={0}>ひよこ</option>
-                <option value={1}>ウサギ</option>
-                <option value={2}>ネコ</option>
-                <option value={3}>オオカミ</option>
-                <option value={4}>ライオン</option>
-                <option value={5}>ドラゴン</option>
-              </select>
+              <div style={{ display: 'inline-block', position: 'relative', marginLeft: 8 }}>
+                <select
+                  value={depth}
+                  onChange={(e) => setDepth(Number(e.target.value))}
+                  style={{
+                    padding: '8px 40px 8px 12px',
+                    borderRadius: 12,
+                    border: '1px solid #ccc',
+                    background: '#ffffff',
+                    appearance: 'none',
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value={0}>Lv.0 ひよこ</option>
+                  <option value={1}>Lv.1 ウサギ</option>
+                  <option value={2}>Lv.2 ネコ</option>
+                  <option value={3}>Lv.3 オオカミ</option>
+                  <option value={4}>Lv.4 ライオン</option>
+                  <option value={5}>Lv.5 ドラゴン</option>
+                </select>
+                <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666' }}>▼</span>
+              </div>
             </div>
             <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>開始</button>
           </div>
@@ -198,7 +215,7 @@ export default function GameElement() {
             <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '1px solid #ccc', display: 'grid', placeItems: 'center', fontSize: 48, flex: '0 0 auto' }}>{bigAvatarChar}</div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
               <ScoreElement field={field} />
-              <div>AI強さ: {aiStrengthLabel}</div>
+              <div>AI: {aiStrengthLabel}</div>
             </div>
           </div>
         ) : (
@@ -207,7 +224,7 @@ export default function GameElement() {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
               <ScoreElement field={field} />
               <div>{status}</div>
-              <div>AI強さ: {aiStrengthLabel}</div>
+              <div>AI: {aiStrengthLabel}</div>
             </div>
           </div>
         )}
