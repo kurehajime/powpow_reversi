@@ -17,8 +17,8 @@ export default function ScoreElement({ field }: Props) {
       <div style={{ width: `${percent}%`, background: fg, height: '100%', borderRadius: barRadius }}></div>
     </div>
   )
-  const hatchBg = 'repeating-linear-gradient(45deg, #f0f0f0 0 6px, #e0e0e0 6px 12px), ' +
-                  'repeating-linear-gradient(-45deg, #f0f0f0 0 6px, #e0e0e0 6px 12px)'
+  const hatchBg = 'repeating-linear-gradient(45deg, #c8c8c8 0 6px, #b0b0b0 6px 12px), ' +
+                  'repeating-linear-gradient(-45deg, #c8c8c8 0 6px, #b0b0b0 6px 12px)'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', textAlign: 'center', alignItems: 'center' }}>
