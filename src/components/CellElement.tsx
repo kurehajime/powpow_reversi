@@ -16,6 +16,8 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
   const r = (cellSize / 2) - padding
   const isDisc = cell !== 0
   const isBlack = cell > 0
+  const strokeColor = isBlack ? '#222222' : '#eeeeee'
+  const strokeWidth = Math.max(2, Math.floor(cellSize * 0.10))
 
   const digits = Math.abs(cell).toString().length
   const baseFont = Math.max(10, r * 0.7)
@@ -36,7 +38,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor }: P
       )}
       {isDisc && (
         <>
-          <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="#000" />
+          <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} />
           <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
             {Math.abs(cell)}
           </text>
