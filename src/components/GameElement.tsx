@@ -63,14 +63,13 @@ export default function GameElement() {
   const bigAvatarElement = useMemo(() => {
     if (!started) return null
     return (
-      <img
-        src={aiImgSrc}
-        alt={`AI ${aiStrengthLabel}`}
-        style={{
-          width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12, filter: 'url(#distortionFilter)',
-          backgroundColor: "#FFFFFF"
-        }}
-      />
+      <div style={{ width: '100%', height: '100%', background: '#fff', padding: 6, boxSizing: 'border-box', borderRadius: 12, display: 'grid', placeItems: 'center' }}>
+        <img
+          src={aiImgSrc}
+          alt={`AI ${aiStrengthLabel}`}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, filter: 'url(#distortionFilter)' }}
+        />
+      </div>
     )
   }, [started, aiImgSrc, aiStrengthLabel])
   const hints = useMemo(() => {
