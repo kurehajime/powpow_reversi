@@ -21,6 +21,13 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
   const isBlack = cell > 0
   const strokeColor = isBlack ? '#222222' : '#eeeeee'
   const strokeWidth = Math.max(2, Math.floor(cellSize * 0.10))
+  // If the stone value is very large, draw dashed outline to emphasize
+  const isBig = Math.abs(cell) > 100
+  const dashMajor = Math.max(4, Math.floor(cellSize * 0.22))
+  const dashMinor = Math.max(3, Math.floor(cellSize * 0.14))
+  const strokeDasharray = `${dashMajor} ${dashMinor}`
+  // Medal ring color: grayscale. White stones -> light gray, Black stones -> dark gray
+  const medalColor = isBlack ? '#444444' : '#CCCCCC'
 
   const digits = Math.abs(cell).toString().length
   const baseFont = Math.max(10, r * 0.7)
@@ -61,13 +68,28 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
       )}
       {isDisc && flipFrom === null && (
         <>
-          <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
-          {isLast && (
-            <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+          {isBig ? (
+            <>
+              {/* Base disc without border */}
+              <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="none" filter="url(#discShadow)" />
+              {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+              {/* Medal ring (solid) same radius */}
+              <circle cx={cx} cy={cy} r={r} fill="none" stroke={medalColor} strokeWidth={strokeWidth} />
+              {/* Dashed ring overlay (top) same radius */}
+              <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+              <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                {Math.abs(cell)}
+              </text>
+            </>
+          ) : (
+            <>
+              <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
+              {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+              <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                {Math.abs(cell)}
+              </text>
+            </>
           )}
-          <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
-            {Math.abs(cell)}
-          </text>
         </>
       )}
       {isDisc && flipFrom !== null && (
@@ -76,6 +98,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
           {(() => {
             const prevBlack = flipFrom > 0
             const prevStroke = prevBlack ? '#222222' : '#eeeeee'
+            const prevIsBig = Math.abs(flipFrom) > 100
             const prevDigits = Math.abs(flipFrom).toString().length
             const prevFont = Math.max(10, r * 0.7)
             const prevSize = prevDigits <= 3 ? prevFont * 1.15 : (prevDigits === 4 ? prevFont * 0.85 : prevFont)
@@ -86,13 +109,28 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
                 style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
               >
-                <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} filter="url(#discShadow)" />
-                {isLast && (
-                  <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+                {prevIsBig ? (
+                  <>
+                    {/* Base disc without border */}
+                    <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke="none" filter="url(#discShadow)" />
+                    {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+                    {/* Medal ring (grayscale based on previous color) */}
+                    <circle cx={cx} cy={cy} r={r} fill="none" stroke={prevBlack ? '#444444' : '#CCCCCC'} strokeWidth={strokeWidth} />
+                    {/* Dashed overlay */}
+                    <circle cx={cx} cy={cy} r={r} fill="none" stroke={prevStroke} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+                    <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                      {Math.abs(flipFrom)}
+                    </text>
+                  </>
+                ) : (
+                  <>
+                    <circle cx={cx} cy={cy} r={r} fill={prevBlack ? '#111' : '#fafafa'} stroke={prevStroke} strokeWidth={strokeWidth} filter="url(#discShadow)" />
+                    {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+                    <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                      {Math.abs(flipFrom)}
+                    </text>
+                  </>
                 )}
-                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
-                  {Math.abs(flipFrom)}
-                </text>
               </motion.g>
             )
           })()}
@@ -103,13 +141,28 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
           >
-            <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
-            {isLast && (
-              <circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />
+            {isBig ? (
+              <>
+                {/* Base disc without border */}
+                <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke="none" filter="url(#discShadow)" />
+                {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+                {/* Medal ring */}
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke={medalColor} strokeWidth={strokeWidth} />
+                {/* Dashed overlay */}
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                  {Math.abs(cell)}
+                </text>
+              </>
+            ) : (
+              <>
+                <circle cx={cx} cy={cy} r={r} fill={isBlack ? '#111' : '#fafafa'} stroke={strokeColor} strokeWidth={strokeWidth} filter="url(#discShadow)" />
+                {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
+                <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
+                  {Math.abs(cell)}
+                </text>
+              </>
             )}
-            <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
-              {Math.abs(cell)}
-            </text>
           </motion.g>
         </>
       )}
