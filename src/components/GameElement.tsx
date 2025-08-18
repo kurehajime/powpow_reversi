@@ -143,7 +143,7 @@ export default function GameElement() {
     const useEasyEval = depth <= 3
     const { index } = (depth === 0
       ? thinkGreedy(field, useEasyEval ? evaluateEasy : undefined)
-      : thinkAlphaBeta(field, depth, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
+      : thinkAlphaBeta(field, depth - 2, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
     if (index != null) {
       const next = field.Place(index)
       const timer = setTimeout(() => {
