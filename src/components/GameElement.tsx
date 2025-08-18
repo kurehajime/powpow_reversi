@@ -17,6 +17,8 @@ export default function GameElement() {
   const [lastIndex, setLastIndex] = useState<number | null>(null)
   const [started, setStarted] = useState<boolean>(false)
   const [ended, setEnded] = useState<boolean>(false)
+  // 結果表示までの待機中は入力を無効化する
+  const [awaitingResult, setAwaitingResult] = useState<boolean>(false)
   const [humanSide, setHumanSide] = useState<1 | -1>(1) // 1=黒(先手), -1=白(後手)
   const [depth, setDepth] = useState<number>(1)
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
@@ -69,9 +71,13 @@ export default function GameElement() {
           alt={`AI ${aiStrengthLabel}`}
           style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, filter: 'url(#distortionFilter)' }}
         />
+        {/* 結果画面の表示待ち中は薄いオーバーレイで入力を遮断 */}
+        {awaitingResult && (
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', cursor: 'wait' }} />
+        )}
       </div>
     )
-  }, [started, aiImgSrc, aiStrengthLabel])
+  }, [started, aiImgSrc, aiStrengthLabel, awaitingResult])
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
@@ -93,33 +99,42 @@ export default function GameElement() {
   }, [field])
 
   // auto-pass when no legal moves for current player but opponent has moves
+  // 結果画面への遷移は1秒ディレイして演出を持たせる
   useEffect(() => {
     if (!started || ended) return
+    let endTimer: ReturnType<typeof setTimeout> | null = null
     if (field.IsEndByScore()) {
       const { black, white } = field.Score()
       const winner = field.WinnerByScore()
-      setStatus(winner === 1 ? `試合終了: 黒 ${black} - 白 ${white}` : winner === -1 ? `試合終了: 白 ${white} - 黒 ${black}` : `試合終了: 黒 ${black} - 白 ${white}`)
-      setEnded(true)
-      return
-    }
-    if (!field.HasAnyMove()) {
+      setStatus(
+        winner === 1
+          ? `試合終了: 黒 ${black} - 白 ${white}`
+          : winner === -1
+            ? `試合終了: 白 ${white} - 黒 ${black}`
+            : `試合終了: 黒 ${black} - 白 ${white}`,
+      )
+      setAwaitingResult(true)
+      endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
+    } else if (!field.HasAnyMove()) {
       const opp = field.HasAnyMoveFor(field.Turn === 1 ? -1 : 1)
       if (opp) {
         setStatus('パス')
         setField(field.Pass())
       } else {
-        // both have no moves -> do nothing here (end state). Optional message:
+        // both have no moves -> terminal (delay before showing result)
         const { black, white } = field.Score()
         const winner = black === white ? '引き分け' : (black > white ? '黒勝ち' : '白勝ち')
         setStatus(`双方打てる手がありません（${winner}: 黒 ${black} - 白 ${white}）`)
-        setEnded(true)
+        setAwaitingResult(true)
+        endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
       }
     }
+    return () => { if (endTimer) clearTimeout(endTimer); setAwaitingResult(false) }
   }, [field, started, ended])
 
   // CPU move on its turn
   useEffect(() => {
-    if (!started || ended) return
+    if (!started || ended || awaitingResult) return
     if (field.IsEndByScore()) return
     if (field.Turn !== cpuSide) return
     if (!field.HasAnyMove()) return
@@ -140,7 +155,7 @@ export default function GameElement() {
     } else {
       setStatus('')
     }
-  }, [field, started, ended, cpuSide, depth])
+  }, [field, started, ended, cpuSide, depth, awaitingResult])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -165,7 +180,7 @@ export default function GameElement() {
           hintColor={hintColor}
           lastIndex={lastIndex}
           onCellClick={(index) => {
-            if (!started || ended) return
+            if (!started || ended || awaitingResult) return
             if (field.Turn !== humanSide) return
             if (field.IsEndByScore()) return
             const next = field.Place(index)
