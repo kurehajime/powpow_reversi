@@ -238,7 +238,11 @@ export default function GameElement() {
       <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '2px solid #bbb', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', fontWeight: 700 }}>
-            <button onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>ゲームスタート</button>
+            <button
+              style={{
+                fontWeight: 900,
+              }}
+              onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>ゲームスタート</button>
             <div>
               <span style={{ fontWeight: 700 }}>Player:</span>
               <label style={{ marginLeft: 8 }}>
