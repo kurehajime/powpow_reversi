@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import lv0Img from '../assets/lv0.png'
 import lv1Img from '../assets/lv1.png'
 import lv2Img from '../assets/lv2.png'
@@ -66,7 +66,7 @@ export default function GameElement() {
       <img
         src={aiImgSrc}
         alt={`AI ${aiStrengthLabel}`}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12, filter: 'url(#distortionFilter)' }}
       />
     )
   }, [started, aiImgSrc, aiStrengthLabel])
@@ -81,6 +81,18 @@ export default function GameElement() {
     }
     return set as ReadonlySet<number>
   }, [field, started, ended, humanSide])
+
+  // Hand-drawn jitter filter support: keep a ref to the turbulence node
+  const turbRef = useRef<SVGFETurbulenceElement | null>(null)
+  useEffect(() => {
+    const el = turbRef.current
+    if (!el) return
+    // Update the turbulence seed periodically to create subtle motion
+    const id = setInterval(() => {
+      el.setAttribute('seed', String((Math.random() * 1000) | 0))
+    }, 200)
+    return () => clearInterval(id)
+  }, [])
 
   // auto-pass when no legal moves for current player but opponent has moves
   useEffect(() => {
@@ -135,6 +147,14 @@ export default function GameElement() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
       <h1 style={{ margin: 0, paddingTop: 8, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
+
+      {/* Hidden SVG filter defs (hand-drawn jitter) */}
+      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <filter id="distortionFilter">
+          <feTurbulence ref={turbRef} type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
+        </filter>
+      </svg>
 
 
       <div className="board-wrap">
