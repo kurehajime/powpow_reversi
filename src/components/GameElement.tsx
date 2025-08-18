@@ -145,9 +145,9 @@ export default function GameElement() {
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="distortionFilter">
           <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise">
-            <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9;10" dur="2s" repeatCount="indefinite" calcMode="discrete" />
+            <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9;10" dur="3s" repeatCount="indefinite" calcMode="discrete" />
           </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
         </filter>
       </svg>
 
