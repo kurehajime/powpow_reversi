@@ -104,6 +104,14 @@ button:focus-visible {
   height: auto;
   display: block;
 }
+
+/* Prevent selecting SVG text (stone numbers) */
+.board-wrap text {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
 @media (max-width: 768px) {
   .board-wrap,
   .panel-wrap {
