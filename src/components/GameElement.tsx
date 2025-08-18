@@ -5,6 +5,7 @@ import lv2Img from '../assets/lv2.png'
 import lv3Img from '../assets/lv3.png'
 import lv4Img from '../assets/lv4.png'
 import lv5Img from '../assets/lv5.png'
+import lv6Img from '../assets/lv6.png'
 import { Field } from '../model/Field'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
@@ -31,8 +32,9 @@ export default function GameElement() {
       case 1: return 'Lv.1 ウサギ'
       case 2: return 'Lv.2 ネコ'
       case 3: return 'Lv.3 オオカミ'
-      case 4: return 'Lv.4 ライオン'
-      case 5: return 'Lv.5 ドラゴン'
+      case 4: return 'Lv.4 くま'
+      case 5: return 'Lv.5 ライオン'
+      case 6: return 'Lv.6 ドラゴン'
     }
   }, [depth])
   const resultText = useMemo(() => {
@@ -59,8 +61,8 @@ export default function GameElement() {
   }
   // Always show AI side avatar image regardless of turn or result
   const aiImgSrc = useMemo(() => {
-    const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img]
-    return list[Math.max(0, Math.min(5, depth))]
+    const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
+    return list[Math.max(0, Math.min(6, depth))]
   }, [depth])
   const bigAvatarElement = useMemo(() => {
     if (!started) return null
@@ -289,8 +291,9 @@ export default function GameElement() {
                   <option value={1}>Lv.1 ウサギ</option>
                   <option value={2}>Lv.2 ネコ</option>
                   <option value={3}>Lv.3 オオカミ</option>
-                  <option value={4}>Lv.4 ライオン</option>
-                  <option value={5}>Lv.5 ドラゴン</option>
+                  <option value={4}>Lv.4 くま</option>
+                  <option value={5}>Lv.5 ライオン</option>
+                  <option value={6}>Lv.6 ドラゴン</option>
                 </select>
                 <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666' }}>▼</span>
               </div>
