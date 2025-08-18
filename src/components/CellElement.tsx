@@ -107,7 +107,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 transition={{ duration: 0.5, ease: 'easeInOut' }}
-                style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
+                style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' }}
               >
                 {prevIsBig ? (
                   <>
@@ -139,7 +139,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' as any }}
+            style={{ transformOrigin: `${cx}px ${cy}px`, transformBox: 'fill-box' }}
           >
             {isBig ? (
               <>
