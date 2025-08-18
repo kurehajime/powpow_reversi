@@ -1,2 +1,2 @@
-# POW REVERSI
-https://kurehajime.github.io/pow_reversi/
+# POW POW REVERSI
+https://kurehajime.github.io/powpow_reversi/

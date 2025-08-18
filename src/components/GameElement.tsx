@@ -144,7 +144,7 @@ export default function GameElement() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 36, fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW REVERSI</h1>
+      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
 
       {/* Hidden SVG filter defs (hand-drawn jitter) */}
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
