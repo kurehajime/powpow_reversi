@@ -82,6 +82,54 @@ export default function GameElement() {
   }, [depth])
   // avatar rendering moved into panel components
 
+  // Handlers（複数行の処理をJSXから分離）
+  const handleCellClick = (index: number) => {
+    if (!started || ended || awaitingResult || replaying) return
+    if (field.Turn !== humanSide) return
+    if (field.IsEndByScore()) return
+    const next = field.Place(index)
+    if (next !== field) {
+      setStatus('')
+      setLastIndex(index)
+      setField(next)
+      setMoveLog(log => [...log, index])
+    }
+  }
+  const handleReplayOverlayClick = () => {
+    pauseReplayTimer()
+    resetReplayTimer()
+    setReplaying(false)
+    // リプレイ参照を初期化
+    movesRef.current = []
+    nextRef.current = 0
+    if (presetHumanSide != null) setHumanSide(presetHumanSide)
+    if (presetLevel != null) setDepth(presetLevel)
+    setField(Field.Initial(8))
+    setStatus('')
+    setEnded(false)
+    setStarted(true)
+    setLastIndex(null)
+    clearReplayParamsInUrl()
+  }
+  const handleEndOverlayReplay = () => {
+    if (moveLog.length === 0) return
+    try {
+      const target = buildReplayUrl(window.location.href, { player: humanSide, level: depth, log: moveLog })
+      if (target === window.location.href) {
+        window.location.reload()
+      } else {
+        window.location.href = target
+      }
+    } catch {
+      const q = buildReplayQuery({ player: humanSide, level: depth, log: moveLog })
+      if (window.location.search === q) {
+        window.location.reload()
+      } else {
+        window.location.href = q
+      }
+    }
+  }
+
   // URL からリプレイ系パラメータを取り除く（ページ遷移なし）
   const clearReplayParamsInUrl = () => {
     try {
@@ -275,36 +323,10 @@ export default function GameElement() {
           hints={hints}
           hintColor={hintColor}
           lastIndex={lastIndex}
-          onCellClick={(index) => {
-            if (!started || ended || awaitingResult || replaying) return
-            if (field.Turn !== humanSide) return
-            if (field.IsEndByScore()) return
-            const next = field.Place(index)
-            if (next !== field) {
-              setStatus('')
-              setLastIndex(index)
-              setField(next)
-              setMoveLog(log => [...log, index])
-            }
-          }}
+          onCellClick={handleCellClick}
         />
         {/* Replay overlay */}
-        <ReplayOverlay
-          visible={replaying}
-          onClick={() => {
-            pauseReplayTimer()
-            resetReplayTimer()
-            setReplaying(false)
-            if (presetHumanSide != null) setHumanSide(presetHumanSide)
-            if (presetLevel != null) setDepth(presetLevel)
-            setField(Field.Initial(8))
-            setStatus('')
-            setEnded(false)
-            setStarted(true)
-            setLastIndex(null)
-            clearReplayParamsInUrl()
-          }}
-        />
+        <ReplayOverlay visible={replaying} onClick={handleReplayOverlayClick} />
         {/* Start overlay */}
         <StartOverlay
           visible={!started}
@@ -318,24 +340,7 @@ export default function GameElement() {
           newGameButtonColor={hexToRgba(resultColor, 0.7)}
           onBackdropNewGame={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
           onNewGame={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
-          onReplay={() => {
-            if (moveLog.length === 0) return
-            try {
-              const target = buildReplayUrl(window.location.href, { player: humanSide, level: depth, log: moveLog })
-              if (target === window.location.href) {
-                window.location.reload()
-              } else {
-                window.location.href = target
-              }
-            } catch {
-              const q = buildReplayQuery({ player: humanSide, level: depth, log: moveLog })
-              if (window.location.search === q) {
-                window.location.reload()
-              } else {
-                window.location.href = q
-              }
-            }
-          }}
+          onReplay={handleEndOverlayReplay}
         />
       </div>
 
