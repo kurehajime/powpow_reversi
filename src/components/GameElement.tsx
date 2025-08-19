@@ -11,6 +11,9 @@ import { useTimer } from 'use-timer'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
 import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
+import StartOverlay from './StartOverlay'
+import ReplayOverlay from './ReplayOverlay'
+import EndOverlay from './EndOverlay'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -314,122 +317,62 @@ export default function GameElement() {
             }
           }}
         />
-        {/* Replay overlay: tint board and allow click to start a new game */}
-        {replaying && (
-          <div
-            onClick={() => {
-              // End replay and start a fresh game immediately
-              pauseReplayTimer()
-              resetReplayTimer()
-              setReplaying(false)
-              setReplayMoves([])
-              setReplayNext(0)
-              if (presetHumanSide != null) setHumanSide(presetHumanSide)
-              if (presetLevel != null) setDepth(presetLevel)
-              setField(Field.Initial(8))
-              setStatus('')
-              setEnded(false)
-              setStarted(true)
-              setLastIndex(null)
-              clearReplayParamsInUrl()
-            }}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(80, 160, 255, 0.15)', mixBlendMode: 'multiply', cursor: 'pointer' }}
-            title="クリックで新規ゲーム"
-          />
-        )}
-        {!started && (
-          <div
-            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 12px 16px', cursor: 'pointer' }}
-          >
-            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.92)', background: 'rgba(0,0,0,0.72)', border: '2px solid rgba(255,255,255,0.6)', borderRadius: 12, padding: '16px 20px', maxWidth: 420, fontWeight: 700, pointerEvents: 'none' }}>
-              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>【ルール】</div>
-              <div style={{ fontSize: 18, lineHeight: 1.6, textAlign: 'left' }}>
-                ① ひっくり返すたびに点数2倍<br />
-                ② 1000点以上取ったら勝ち
-              </div>
-            </div>
-          </div>
-        )}
-        {ended && (
-          <div
-            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
-          >
-            <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                fontSize: 64,
-                fontWeight: 800,
-                color: hexToRgba(resultColor, 0.85),
-                letterSpacing: 2,
-                fontFamily: '"Rubik Mono One", system-ui, sans-serif'
-              }}>
-                {resultText}
-              </div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button
-                  className="btn-pulse"
-                  onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 900,
-                    padding: '12px 20px',
-                    borderRadius: 14,
-                    backgroundColor: hexToRgba(resultColor, 0.7),
-                    color: '#fff',
-                    border: 'none',
-                    fontFamily: '"Rubik Mono One", system-ui, sans-serif',
-                    letterSpacing: 1
-                  }}
-                >
-                  NEW GAME
-                </button>
-                <button
-                  onClick={() => {
-                    // ゲーム終了時のリプレイ（現在の対局ログを使用）
-                    if (moveLog.length === 0) return
-                    // URL に遷移してリプレイ開始（pushState ではなく移動）
-                    try {
-                      const url = new URL(window.location.href)
-                      url.searchParams.set('replay', '1')
-                      url.searchParams.set('player', String(humanSide))
-                      url.searchParams.set('level', String(depth))
-                      url.searchParams.set('log', moveLog.join('.'))
-                      const target = url.toString()
-                      if (target === window.location.href) {
-                        // 同一URLなら明示リロード
-                        window.location.reload()
-                      } else {
-                        window.location.href = target
-                      }
-                    } catch {
-                      // Fallback: クエリだけで遷移
-                      const q = `?replay=1&player=${humanSide}&level=${depth}&log=${moveLog.join('.')}`
-                      if (window.location.search === q) {
-                        window.location.reload()
-                      } else {
-                        window.location.href = q
-                      }
-                    }
-                  }}
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 900,
-                    padding: '12px 20px',
-                    borderRadius: 14,
-                    backgroundColor: '#1e88e5',
-                    color: '#fff',
-                    border: 'none',
-                    fontFamily: '"Rubik Mono One", system-ui, sans-serif',
-                    letterSpacing: 1
-                  }}
-                >
-                  リプレイ
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Replay overlay */}
+        <ReplayOverlay
+          visible={replaying}
+          onClick={() => {
+            pauseReplayTimer()
+            resetReplayTimer()
+            setReplaying(false)
+            setReplayMoves([])
+            setReplayNext(0)
+            if (presetHumanSide != null) setHumanSide(presetHumanSide)
+            if (presetLevel != null) setDepth(presetLevel)
+            setField(Field.Initial(8))
+            setStatus('')
+            setEnded(false)
+            setStarted(true)
+            setLastIndex(null)
+            clearReplayParamsInUrl()
+          }}
+        />
+        {/* Start overlay */}
+        <StartOverlay
+          visible={!started}
+          onStart={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}
+        />
+        {/* End overlay */}
+        <EndOverlay
+          visible={ended}
+          resultText={resultText}
+          titleColor={hexToRgba(resultColor, 0.85)}
+          newGameButtonColor={hexToRgba(resultColor, 0.7)}
+          onBackdropNewGame={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
+          onNewGame={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
+          onReplay={() => {
+            if (moveLog.length === 0) return
+            try {
+              const url = new URL(window.location.href)
+              url.searchParams.set('replay', '1')
+              url.searchParams.set('player', String(humanSide))
+              url.searchParams.set('level', String(depth))
+              url.searchParams.set('log', moveLog.join('.'))
+              const target = url.toString()
+              if (target === window.location.href) {
+                window.location.reload()
+              } else {
+                window.location.href = target
+              }
+            } catch {
+              const q = `?replay=1&player=${humanSide}&level=${depth}&log=${moveLog.join('.')}`
+              if (window.location.search === q) {
+                window.location.reload()
+              } else {
+                window.location.href = q
+              }
+            }
+          }}
+        />
       </div>
 
       {/* 盤面の下にルールの Marquee */}
