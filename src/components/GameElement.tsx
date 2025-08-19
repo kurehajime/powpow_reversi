@@ -9,11 +9,13 @@ import lv6Img from '../assets/lv6.png'
 import { Field } from '../model/Field'
 import { useTimer } from 'use-timer'
 import FieldElement from './FieldElement'
-import ScoreElement from './ScoreElement'
 import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
 import StartOverlay from './StartOverlay'
 import ReplayOverlay from './ReplayOverlay'
 import EndOverlay from './EndOverlay'
+import StartSettingsPanel from './panels/StartSettingsPanel'
+import InfoPanelInGame from './panels/InfoPanelInGame'
+import InfoPanelEnded from './panels/InfoPanelEnded'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -86,22 +88,7 @@ export default function GameElement() {
     const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
     return list[Math.max(0, Math.min(6, depth))]
   }, [depth])
-  const bigAvatarElement = useMemo(() => {
-    if (!started) return null
-    return (
-      <div style={{ width: '100%', height: '100%', background: '#fff', padding: 6, boxSizing: 'border-box', borderRadius: 12, display: 'grid', placeItems: 'center' }}>
-        <img
-          src={aiImgSrc}
-          alt={`AI ${aiStrengthLabel}`}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, filter: 'url(#distortionFilter)' }}
-        />
-        {/* 結果画面の表示待ち中は薄いオーバーレイで入力を遮断 */}
-        {awaitingResult && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', cursor: 'wait' }} />
-        )}
-      </div>
-    )
-  }, [started, aiImgSrc, aiStrengthLabel, awaitingResult])
+  // avatar rendering moved into panel components
 
   // URL からリプレイ系パラメータを取り除く（ページ遷移なし）
   const clearReplayParamsInUrl = () => {
@@ -385,72 +372,17 @@ export default function GameElement() {
       {/* Top panel area with fixed size to avoid layout shift (moved below board) */}
       <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
         {!started ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, border: '2px solid #bbb', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', justifyContent: 'center', fontWeight: 700 }}>
-            <button
-              style={{
-                fontWeight: 900,
-              }}
-              onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null); setMoveLog([]) }}>ゲームスタート</button>
-            <div>
-              <span style={{ fontWeight: 700 }}>Player:</span>
-              <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === 1} onChange={() => setHumanSide(1)} /> Black
-              </label>
-              <label style={{ marginLeft: 8 }}>
-                <input type="radio" name="side" checked={humanSide === -1} onChange={() => setHumanSide(-1)} /> White
-              </label>
-            </div>
-            <div>
-              <span style={{ fontWeight: 700 }}>AI:</span>
-              <div style={{ display: 'inline-block', position: 'relative', marginLeft: 8 }}>
-                <select
-                  value={depth}
-                  onChange={(e) => setDepth(Number(e.target.value))}
-                  style={{
-                    padding: '8px 40px 8px 12px',
-                    borderRadius: 12,
-                    border: '2px solid #bbb',
-                    background: '#ffffff',
-                    appearance: 'none',
-                    WebkitAppearance: 'none',
-                    MozAppearance: 'none',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value={0}>Lv.0 ひよこ</option>
-                  <option value={1}>Lv.1 ウサギ</option>
-                  <option value={2}>Lv.2 ネコ</option>
-                  <option value={3}>Lv.3 オオカミ</option>
-                  <option value={4}>Lv.4 くま</option>
-                  <option value={5}>Lv.5 ライオン</option>
-                  <option value={6}>Lv.6 ドラゴン</option>
-                </select>
-                <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666' }}>▼</span>
-              </div>
-            </div>
-          </div>
+          <StartSettingsPanel
+            humanSide={humanSide}
+            depth={depth}
+            onStart={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null); setMoveLog([]) }}
+            onChangeSide={(s) => setHumanSide(s)}
+            onChangeDepth={(d) => setDepth(d)}
+          />
         ) : ended ? (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '2px solid #bbb', borderRadius: 8, background: 'inherit', width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center', fontWeight: 700 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
-              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '2px solid #bbb', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
-              <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
-            </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
-              <ScoreElement field={field} />
-            </div>
-          </div>
+          <InfoPanelEnded field={field} aiImgSrc={aiImgSrc} aiLabel={aiStrengthLabel ?? ''} />
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'row', gap: 6, padding: 12, border: '2px solid #bbb', borderRadius: 8, width: '100%', height: '100%', boxSizing: 'border-box', alignItems: 'center', fontWeight: 700 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: '0 0 auto' }}>
-              <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '2px solid #bbb', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>{bigAvatarElement}</div>
-              <div style={{ fontSize: 12, color: '#555' }}>{aiStrengthLabel}</div>
-            </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
-              <ScoreElement field={field} />
-              <div>{status}</div>
-            </div>
-          </div>
+          <InfoPanelInGame field={field} aiImgSrc={aiImgSrc} aiLabel={aiStrengthLabel ?? ''} awaitingResult={awaitingResult} status={status} />
         )}
       </div>
     </div>
