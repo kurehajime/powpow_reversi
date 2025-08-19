@@ -143,9 +143,10 @@ export default function GameElement() {
     // 同期で十分。必要ならsetTimeoutで遅延演出可能
     // レベル0〜3は簡易評価（Cellsの総和）を使用して弱めのプレイにする
     const useEasyEval = depth <= 3
+    const depthForAlphaBeta = useEasyEval ? depth : depth - 2
     const { index } = (depth === 0
       ? thinkGreedy(field, useEasyEval ? evaluateEasy : undefined)
-      : thinkAlphaBeta(field, depth - 2, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
+      : thinkAlphaBeta(field, depthForAlphaBeta, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
     if (index != null) {
       const next = field.Place(index)
       const timer = setTimeout(() => {
