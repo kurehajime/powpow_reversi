@@ -8,7 +8,7 @@ import InfoPanelEnded from './panels/InfoPanelEnded'
 import { Field } from '../model/Field'
 import { computeJitterScale } from '../lib/board'
 import { hexToRgba } from '../lib/color'
-import { resultColorForText, resultTextForField } from '../lib/result'
+import { resultColorForText, resultTextForField, type ResultText } from '../lib/result'
 
 type Props = {
   moves: number[]
@@ -33,7 +33,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const jitterScale = useMemo(() => computeJitterScale(field), [field])
   const resultText = useMemo(() => ended ? resultTextForField(field, humanSide) : '', [ended, field, humanSide])
-  const resultColor = useMemo(() => ended ? resultColorForText(resultText as any) : '#000', [ended, resultText])
+  const resultColor = useMemo(() => ended ? resultColorForText(resultText as ResultText) : '#000', [ended, resultText])
 
   const { time: replayTime, start, pause, reset } = useTimer({ interval: intervalMs, autostart: false })
   const movesRef = useRef<number[]>(moves)
