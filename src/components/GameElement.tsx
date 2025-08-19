@@ -14,6 +14,7 @@ import { hexToRgba } from '../lib/color'
 import { computeJitterScale } from '../lib/board'
 import { parseLog } from '../lib/replay'
 import { buildReplayUrl, buildReplayQuery, clearReplayParams as clearReplayParamsPure } from '../lib/url'
+import { resultTextForField, resultColorForText, type ResultText } from '../lib/result'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -53,20 +54,8 @@ export default function GameElement() {
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   // CPU手の遅延実行タイマー参照（競合時の取りこぼし防止）
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const resultText = useMemo(() => {
-    if (!ended) return ''
-    const { black, white } = field.Score()
-    const winner = black === white ? 0 : (black > white ? 1 : -1)
-    if (winner === 0) return 'DRAW'
-    return winner === humanSide ? 'YOU WIN' : 'YOU LOSE'
-  }, [ended, field, humanSide])
-  const resultColor = useMemo(() => {
-    if (!ended) return '#000'
-    // Brighter and more saturated variants
-    return resultText === 'YOU WIN' ? '#4FC3F7' // vivid light blue
-      : resultText === 'YOU LOSE' ? '#FF5252'  // vivid red
-        : '#FFD740'                               // vivid amber (draw)
-  }, [ended, resultText])
+  const resultText = useMemo(() => ended ? resultTextForField(field, humanSide) : '', [ended, field, humanSide])
+  const resultColor = useMemo(() => ended ? resultColorForText(resultText as ResultText) : '#000', [ended, resultText])
   // avatar rendering moved into panel components (levelだけ渡す)
 
   // Handlers（複数行の処理をJSXから分離）
