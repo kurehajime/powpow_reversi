@@ -37,8 +37,6 @@ export default function GameElement() {
   const [moveLog, setMoveLog] = useState<number[]>([])
   // --- Replay states (Phase 4) ---
   const [replaying, setReplaying] = useState<boolean>(false)
-  const [replayMoves, setReplayMoves] = useState<number[]>([])
-  const [replayNext, setReplayNext] = useState<number>(0)
   // URL指定のデフォルト設定（リプレイ終了後の新規ゲームに反映）
   const [presetHumanSide, setPresetHumanSide] = useState<1 | -1 | null>(null)
   const [presetLevel, setPresetLevel] = useState<number | null>(null)
@@ -49,6 +47,13 @@ export default function GameElement() {
     pause: pauseReplayTimer,
     reset: resetReplayTimer,
   } = useTimer({ interval: 500, autostart: false })
+  // 最新値参照用のref（lint回避と挙動安定化）
+  const fieldRef = useRef(field)
+  useEffect(() => { fieldRef.current = field }, [field])
+  const movesRef = useRef<number[]>([])
+  const nextRef = useRef<number>(0)
+  const pauseRef = useRef(pauseReplayTimer)
+  useEffect(() => { pauseRef.current = pauseReplayTimer }, [pauseReplayTimer])
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
   const topPanelHeight = 160
@@ -191,10 +196,11 @@ export default function GameElement() {
 
     // Initialize replay
     setReplaying(true)
-    setReplayMoves(moves)
-    setReplayNext(0)
     // 終了画面の「リプレイ」ボタンで再度使えるよう、moveLog にも保持
     setMoveLog(moves)
+    // refsにも反映
+    movesRef.current = moves
+    nextRef.current = 0
     setStatus('リプレイ中...')
     setField(Field.Initial(8))
     setStarted(true)
@@ -203,16 +209,16 @@ export default function GameElement() {
     // start ticking
     resetReplayTimer()
     startReplayTimer()
-  }, [])
+  }, [resetReplayTimer, startReplayTimer])
 
   // --- Replay: advance one move on each timer tick ---
   useEffect(() => {
     if (!replaying) return
-    if (replayNext >= replayMoves.length) {
+    if (nextRef.current >= movesRef.current.length) {
       // リプレイ終了: 通常対局と同様に終了画面へ遷移
       // 先に awaiting を立て、CPU手の発火を確実に抑止
       setAwaitingResult(true)
-      pauseReplayTimer()
+      pauseRef.current()
       setReplaying(false)
       const t = setTimeout(() => {
         setEnded(true)
@@ -221,27 +227,30 @@ export default function GameElement() {
       return () => clearTimeout(t)
     }
     // On each tick (replayTime changes), try to apply next move
-    let nextField = field
-    const idx = replayMoves[replayNext]
+    const idx = movesRef.current[nextRef.current]
     // If pass is needed, auto-pass until the move becomes legal or game ends
     let guard = 0
-    while (!nextField.CanPlace(idx)) {
-      guard++
-      if (guard > 2) break
-      if (nextField.HasAnyMove()) {
-        // current side has moves but this index is illegal -> do nothing
-        break
+    let placed = false
+    setField(prev => {
+      let cur = prev
+      while (!cur.CanPlace(idx)) {
+        guard++
+        if (guard > 2) break
+        if (cur.HasAnyMove()) {
+          break
+        }
+        const oppHas = cur.HasAnyMoveFor(cur.Turn === 1 ? -1 : 1)
+        if (!oppHas) break
+        cur = cur.Pass()
       }
-      const oppHas = nextField.HasAnyMoveFor(nextField.Turn === 1 ? -1 : 1)
-      if (!oppHas) break // terminal
-      nextField = nextField.Pass()
-    }
-    if (nextField.CanPlace(idx)) {
-      const placed = nextField.Place(idx)
-      setField(placed)
-      setLastIndex(idx)
-    }
-    setReplayNext(n => n + 1)
+      if (cur.CanPlace(idx)) {
+        placed = true
+        return cur.Place(idx)
+      }
+      return cur
+    })
+    if (placed) setLastIndex(idx)
+    nextRef.current += 1
   }, [replaying, replayTime])
 
   return (
@@ -286,8 +295,6 @@ export default function GameElement() {
             pauseReplayTimer()
             resetReplayTimer()
             setReplaying(false)
-            setReplayMoves([])
-            setReplayNext(0)
             if (presetHumanSide != null) setHumanSide(presetHumanSide)
             if (presetLevel != null) setDepth(presetLevel)
             setField(Field.Initial(8))
