@@ -9,7 +9,7 @@ import { Field } from '../model/Field'
 import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
 import { computeJitterScale } from '../lib/board'
 import { hexToRgba } from '../lib/color'
-import { resultColorForText, resultTextForField } from '../lib/result'
+import { resultColorForText, resultTextForField, type ResultText } from '../lib/result'
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
 
 type Props = {
@@ -35,7 +35,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
   const jitterScale = useMemo(() => computeJitterScale(field), [field])
 
   const resultText = useMemo(() => ended ? resultTextForField(field, humanSide) : '', [ended, field, humanSide])
-  const resultColor = useMemo(() => ended ? resultColorForText(resultText as any) : '#000', [ended, resultText])
+  const resultColor = useMemo(() => ended ? resultColorForText(resultText as ResultText) : '#000', [ended, resultText])
 
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
