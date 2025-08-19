@@ -2,14 +2,16 @@ type Props = {
   visible: boolean
   resultText: string
   titleColor: string
-  newGameButtonColor: string
   onBackdropNewGame: () => void
   onNewGame: () => void
   onReplay: () => void
 }
 
-export default function EndOverlay({ visible, resultText, titleColor, newGameButtonColor, onBackdropNewGame, onNewGame, onReplay }: Props) {
+export default function EndOverlay({ visible, resultText, titleColor, onBackdropNewGame, onNewGame, onReplay }: Props) {
   if (!visible) return null
+  // Colors: NEW GAME = bright purple, Replay = orange, same opacity
+  const newGameBg = 'rgba(156, 39, 176, 0.85)' // #9C27B0 @ 0.85
+  const replayBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
   return (
     <div
       onClick={onBackdropNewGame}
@@ -34,7 +36,7 @@ export default function EndOverlay({ visible, resultText, titleColor, newGameBut
               fontWeight: 900,
               padding: '12px 20px',
               borderRadius: 14,
-              backgroundColor: newGameButtonColor,
+              backgroundColor: newGameBg,
               color: '#fff',
               border: 'none',
               fontFamily: '"Rubik Mono One", system-ui, sans-serif',
@@ -50,18 +52,17 @@ export default function EndOverlay({ visible, resultText, titleColor, newGameBut
               fontWeight: 900,
               padding: '12px 20px',
               borderRadius: 14,
-              backgroundColor: '#1e88e5',
+              backgroundColor: replayBg,
               color: '#fff',
               border: 'none',
               fontFamily: '"Rubik Mono One", system-ui, sans-serif',
               letterSpacing: 1
             }}
           >
-            リプレイ
+            REPLAY
           </button>
         </div>
       </div>
     </div>
   )
 }
-

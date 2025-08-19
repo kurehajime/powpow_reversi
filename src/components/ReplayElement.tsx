@@ -125,7 +125,6 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
           visible={ended}
           resultText={resultText}
           titleColor={hexToRgba(resultColor, 0.85)}
-          newGameButtonColor={hexToRgba(resultColor, 0.7)}
           onBackdropNewGame={handleExitToNewGame}
           onNewGame={handleExitToNewGame}
           onReplay={handleReplayRestart}

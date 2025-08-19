@@ -177,7 +177,6 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
           visible={ended}
           resultText={resultText}
           titleColor={hexToRgba(resultColor, 0.85)}
-          newGameButtonColor={hexToRgba(resultColor, 0.7)}
           onBackdropNewGame={handleNewGame}
           onNewGame={handleNewGame}
           onReplay={handleReplayFromEnd}
@@ -206,4 +205,3 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
     </div>
   )
 }
-
