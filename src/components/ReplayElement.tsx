@@ -1,0 +1,148 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTimer } from 'use-timer'
+import FieldElement from './FieldElement'
+import ReplayOverlay from './ReplayOverlay'
+import EndOverlay from './EndOverlay'
+import InfoPanelInGame from './panels/InfoPanelInGame'
+import InfoPanelEnded from './panels/InfoPanelEnded'
+import { Field } from '../model/Field'
+import { computeJitterScale } from '../lib/board'
+import { hexToRgba } from '../lib/color'
+import { resultColorForText, resultTextForField } from '../lib/result'
+
+type Props = {
+  moves: number[]
+  player: 1 | -1
+  level: number
+  intervalMs?: number
+  onExitToNewGame: (side: 1 | -1, level: number) => void
+}
+
+export default function ReplayElement({ moves, player, level, intervalMs = 500, onExitToNewGame }: Props) {
+  const [field, setField] = useState<Field>(() => Field.Initial(8))
+  const [status, setStatus] = useState('リプレイ中...')
+  const [lastIndex, setLastIndex] = useState<number | null>(null)
+  const [ended, setEnded] = useState(false)
+  const [awaitingResult, setAwaitingResult] = useState(false)
+  const [replaying, setReplaying] = useState(true)
+  const [humanSide] = useState<1 | -1>(player)
+  const [depth] = useState<number>(level)
+
+  const cellSize = 60
+  const topPanelHeight = 160
+  const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
+  const jitterScale = useMemo(() => computeJitterScale(field), [field])
+  const resultText = useMemo(() => ended ? resultTextForField(field, humanSide) : '', [ended, field, humanSide])
+  const resultColor = useMemo(() => ended ? resultColorForText(resultText as any) : '#000', [ended, resultText])
+
+  const { time: replayTime, start, pause, reset } = useTimer({ interval: intervalMs, autostart: false })
+  const movesRef = useRef<number[]>(moves)
+  const nextRef = useRef<number>(0)
+  const pauseRef = useRef(pause)
+  useEffect(() => { pauseRef.current = pause }, [pause])
+
+  // 初期化
+  useEffect(() => {
+    setField(Field.Initial(8))
+    setEnded(false)
+    setLastIndex(null)
+    setStatus('リプレイ中...')
+    movesRef.current = moves
+    nextRef.current = 0
+    reset()
+    start()
+  }, [moves, reset, start])
+
+  // 1手ずつ進める
+  useEffect(() => {
+    if (!replaying) return
+    if (nextRef.current >= movesRef.current.length) {
+      // リプレイ終了: 即座に結果画面へ
+      pauseRef.current()
+      setReplaying(false)
+      setEnded(true)
+      setAwaitingResult(false)
+      return
+    }
+    const idx = movesRef.current[nextRef.current]
+    let guard = 0
+    let placed = false
+    setField(prev => {
+      let cur = prev
+      while (!cur.CanPlace(idx)) {
+        guard++
+        if (guard > 2) break
+        if (cur.HasAnyMove()) { break }
+        const oppHas = cur.HasAnyMoveFor(cur.Turn === 1 ? -1 : 1)
+        if (!oppHas) break
+        cur = cur.Pass()
+      }
+      if (cur.CanPlace(idx)) { placed = true; return cur.Place(idx) }
+      return cur
+    })
+    if (placed) setLastIndex(idx)
+    nextRef.current += 1
+  }, [replaying, replayTime])
+
+  const handleExitToNewGame = () => {
+    setReplaying(false)
+    pauseRef.current()
+    onExitToNewGame(humanSide, depth)
+  }
+
+  const handleReplayRestart = () => {
+    // 同じログでリプレイを最初からやり直す
+    setEnded(false)
+    setReplaying(true)
+    setStatus('リプレイ中...')
+    setLastIndex(null)
+    movesRef.current = moves
+    nextRef.current = 0
+    setField(Field.Initial(8))
+    reset()
+    start()
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
+      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
+        <filter id="distortionFilter">
+          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale={jitterScale} />
+        </filter>
+      </svg>
+      <div className="board-wrap">
+        <FieldElement
+          field={field}
+          cellSize={cellSize}
+          hints={new Set()}
+          hintColor={hintColor}
+          lastIndex={lastIndex}
+        />
+        <ReplayOverlay visible={replaying} onClick={handleExitToNewGame} />
+        <EndOverlay
+          visible={ended}
+          resultText={resultText}
+          titleColor={hexToRgba(resultColor, 0.85)}
+          newGameButtonColor={hexToRgba(resultColor, 0.7)}
+          onBackdropNewGame={handleExitToNewGame}
+          onNewGame={handleExitToNewGame}
+          onReplay={handleReplayRestart}
+        />
+      </div>
+      <div className="panel-wrap" style={{ marginTop: 4 }}>
+        <div style={{ fontSize: 14, color: '#444' }}>
+          【ルール】✅ひっくり返すたびに点数2倍 ✅1000点以上取ったら勝ち
+        </div>
+      </div>
+      <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+        {ended ? (
+          <InfoPanelEnded field={field} level={depth} />
+        ) : (
+          <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
+        )}
+      </div>
+    </div>
+  )
+}
