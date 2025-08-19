@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import lv0Img from '../assets/lv0.png'
 import lv1Img from '../assets/lv1.png'
 import lv2Img from '../assets/lv2.png'
@@ -7,6 +7,7 @@ import lv4Img from '../assets/lv4.png'
 import lv5Img from '../assets/lv5.png'
 import lv6Img from '../assets/lv6.png'
 import { Field } from '../model/Field'
+import { useTimer } from 'use-timer'
 import FieldElement from './FieldElement'
 import ScoreElement from './ScoreElement'
 import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
@@ -22,6 +23,22 @@ export default function GameElement() {
   const [awaitingResult, setAwaitingResult] = useState<boolean>(false)
   const [humanSide, setHumanSide] = useState<1 | -1>(1) // 1=黒(先手), -1=白(後手)
   const [depth, setDepth] = useState<number>(1)
+  // ゲーム中に置いた手（index）のログ（パスは記録しない）
+  const [moveLog, setMoveLog] = useState<number[]>([])
+  // --- Replay states (Phase 4) ---
+  const [replaying, setReplaying] = useState<boolean>(false)
+  const [replayMoves, setReplayMoves] = useState<number[]>([])
+  const [replayNext, setReplayNext] = useState<number>(0)
+  // URL指定のデフォルト設定（リプレイ終了後の新規ゲームに反映）
+  const [presetHumanSide, setPresetHumanSide] = useState<1 | -1 | null>(null)
+  const [presetLevel, setPresetLevel] = useState<number | null>(null)
+  // use-timer for replay ticks (500ms)
+  const {
+    time: replayTime,
+    start: startReplayTimer,
+    pause: pauseReplayTimer,
+    reset: resetReplayTimer,
+  } = useTimer({ interval: 500, autostart: false })
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
   const topPanelHeight = 160
@@ -37,6 +54,8 @@ export default function GameElement() {
       case 6: return 'Lv.6 ドラゴン'
     }
   }, [depth])
+  // CPU手の遅延実行タイマー参照（競合時の取りこぼし防止）
+  const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resultText = useMemo(() => {
     if (!ended) return ''
     const { black, white } = field.Score()
@@ -80,17 +99,29 @@ export default function GameElement() {
       </div>
     )
   }, [started, aiImgSrc, aiStrengthLabel, awaitingResult])
+
+  // URL からリプレイ系パラメータを取り除く（ページ遷移なし）
+  const clearReplayParamsInUrl = () => {
+    try {
+      const url = new URL(window.location.href)
+      url.searchParams.delete('replay')
+      url.searchParams.delete('player')
+      url.searchParams.delete('level')
+      url.searchParams.delete('log')
+      window.history.replaceState({}, '', url.toString())
+    } catch { /* noop */ }
+  }
   const hints = useMemo(() => {
     const set = new Set<number>()
     const cells = field.Cells
     // 人間の手番のみハイライトを出す
-    if (started && !ended && field.Turn === humanSide) {
+    if (started && !ended && !replaying && field.Turn === humanSide) {
       for (let i = 0; i < cells.length; i++) {
         if (field.CanPlace(i)) set.add(i)
       }
     }
     return set as ReadonlySet<number>
-  }, [field, started, ended, humanSide])
+  }, [field, started, ended, humanSide, replaying])
 
   // 手描き風の揺れは SVG の <animate> で実装（JSの更新なし）
   // 揺れ強度はスコアで可変: max(black, white) を ２00 で割って切り上げ、1〜5にクランプ
@@ -103,7 +134,7 @@ export default function GameElement() {
   // auto-pass when no legal moves for current player but opponent has moves
   // 結果画面への遷移は1秒ディレイして演出を持たせる
   useEffect(() => {
-    if (!started || ended) return
+    if (!started || ended || replaying) return
     let endTimer: ReturnType<typeof setTimeout> | null = null
     if (field.IsEndByScore()) {
       const { black, white } = field.Score()
@@ -132,11 +163,11 @@ export default function GameElement() {
       }
     }
     return () => { if (endTimer) clearTimeout(endTimer); setAwaitingResult(false) }
-  }, [field, started, ended])
+  }, [field, started, ended, replaying])
 
   // CPU move on its turn
   useEffect(() => {
-    if (!started || ended || awaitingResult) return
+    if (!started || ended || awaitingResult || replaying) return
     if (field.IsEndByScore()) return
     if (field.Turn !== cpuSide) return
     if (!field.HasAnyMove()) return
@@ -149,16 +180,104 @@ export default function GameElement() {
       : thinkAlphaBeta(field, depthForAlphaBeta, undefined, undefined, useEasyEval ? evaluateEasy : undefined))
     if (index != null) {
       const next = field.Place(index)
-      const timer = setTimeout(() => {
+      if (aiTimerRef.current) { clearTimeout(aiTimerRef.current); aiTimerRef.current = null }
+      aiTimerRef.current = setTimeout(() => {
         setStatus('')
         setLastIndex(index)
         setField(next)
+        setMoveLog(log => [...log, index])
+        aiTimerRef.current = null
       }, 750)
-      return () => clearTimeout(timer)
+      return () => { if (aiTimerRef.current) { clearTimeout(aiTimerRef.current); aiTimerRef.current = null } }
     } else {
       setStatus('')
     }
-  }, [field, started, ended, cpuSide, depth, awaitingResult])
+  }, [field, started, ended, cpuSide, depth, awaitingResult, replaying])
+
+  // --- Replay: parse URL parameters on mount ---
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    const isReplay = sp.get('replay') === '1'
+    if (!isReplay) return
+    // 念のため、CPUの保留タイマーを停止
+    if (aiTimerRef.current) { clearTimeout(aiTimerRef.current); aiTimerRef.current = null }
+    // Parse moves
+    const log = sp.get('log')?.trim() ?? ''
+    const moves = log
+      .split('.')
+      .map(s => s.trim())
+      .filter(s => s.length > 0 && /^\d+$/.test(s))
+      .map(s => Number(s))
+    // Optional presets
+    const p = sp.get('player')
+    const lv = sp.get('level')
+    if (p === '1' || p === '-1') {
+      const side = Number(p) as 1 | -1
+      setPresetHumanSide(side)
+      // リプレイ画面でも表示に反映させるため即時適用
+      setHumanSide(side)
+    }
+    if (lv && /^\d+$/.test(lv)) {
+      const d = Math.max(0, Math.min(6, Number(lv)))
+      setPresetLevel(d)
+      // リプレイ画面のAI表示（アバター/ラベル）に反映
+      setDepth(d)
+    }
+
+    // Initialize replay
+    setReplaying(true)
+    setReplayMoves(moves)
+    setReplayNext(0)
+    // 終了画面の「リプレイ」ボタンで再度使えるよう、moveLog にも保持
+    setMoveLog(moves)
+    setStatus('リプレイ中...')
+    setField(Field.Initial(8))
+    setStarted(true)
+    setEnded(false)
+    setLastIndex(null)
+    // start ticking
+    resetReplayTimer()
+    startReplayTimer()
+  }, [])
+
+  // --- Replay: advance one move on each timer tick ---
+  useEffect(() => {
+    if (!replaying) return
+    if (replayNext >= replayMoves.length) {
+      // リプレイ終了: 通常対局と同様に終了画面へ遷移
+      // 先に awaiting を立て、CPU手の発火を確実に抑止
+      setAwaitingResult(true)
+      pauseReplayTimer()
+      setReplaying(false)
+      const t = setTimeout(() => {
+        setEnded(true)
+        setAwaitingResult(false)
+      }, 1000)
+      return () => clearTimeout(t)
+    }
+    // On each tick (replayTime changes), try to apply next move
+    let nextField = field
+    const idx = replayMoves[replayNext]
+    // If pass is needed, auto-pass until the move becomes legal or game ends
+    let guard = 0
+    while (!nextField.CanPlace(idx)) {
+      guard++
+      if (guard > 2) break
+      if (nextField.HasAnyMove()) {
+        // current side has moves but this index is illegal -> do nothing
+        break
+      }
+      const oppHas = nextField.HasAnyMoveFor(nextField.Turn === 1 ? -1 : 1)
+      if (!oppHas) break // terminal
+      nextField = nextField.Pass()
+    }
+    if (nextField.CanPlace(idx)) {
+      const placed = nextField.Place(idx)
+      setField(placed)
+      setLastIndex(idx)
+    }
+    setReplayNext(n => n + 1)
+  }, [replaying, replayTime])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -183,7 +302,7 @@ export default function GameElement() {
           hintColor={hintColor}
           lastIndex={lastIndex}
           onCellClick={(index) => {
-            if (!started || ended || awaitingResult) return
+            if (!started || ended || awaitingResult || replaying) return
             if (field.Turn !== humanSide) return
             if (field.IsEndByScore()) return
             const next = field.Place(index)
@@ -191,9 +310,33 @@ export default function GameElement() {
               setStatus('')
               setLastIndex(index)
               setField(next)
+              setMoveLog(log => [...log, index])
             }
           }}
         />
+        {/* Replay overlay: tint board and allow click to start a new game */}
+        {replaying && (
+          <div
+            onClick={() => {
+              // End replay and start a fresh game immediately
+              pauseReplayTimer()
+              resetReplayTimer()
+              setReplaying(false)
+              setReplayMoves([])
+              setReplayNext(0)
+              if (presetHumanSide != null) setHumanSide(presetHumanSide)
+              if (presetLevel != null) setDepth(presetLevel)
+              setField(Field.Initial(8))
+              setStatus('')
+              setEnded(false)
+              setStarted(true)
+              setLastIndex(null)
+              clearReplayParamsInUrl()
+            }}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(80, 160, 255, 0.15)', mixBlendMode: 'multiply', cursor: 'pointer' }}
+            title="クリックで新規ゲーム"
+          />
+        )}
         {!started && (
           <div
             onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}
@@ -210,10 +353,10 @@ export default function GameElement() {
         )}
         {ended && (
           <div
-            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null) }}
+            onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
             style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
           >
-            <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
               <div style={{
                 fontSize: 64,
                 fontWeight: 800,
@@ -223,23 +366,67 @@ export default function GameElement() {
               }}>
                 {resultText}
               </div>
-              <button
-                className="btn-pulse"
-                onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null) }}
-                style={{
-                  fontSize: 24,
-                  fontWeight: 900,
-                  padding: '14px 28px',
-                  borderRadius: 14,
-                  backgroundColor: hexToRgba(resultColor, 0.7),
-                  color: '#fff',
-                  border: 'none',
-                  fontFamily: '"Rubik Mono One", system-ui, sans-serif',
-                  letterSpacing: 1
-                }}
-              >
-                NEW GAME
-              </button>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  className="btn-pulse"
+                  onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(false); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl() }}
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 900,
+                    padding: '12px 20px',
+                    borderRadius: 14,
+                    backgroundColor: hexToRgba(resultColor, 0.7),
+                    color: '#fff',
+                    border: 'none',
+                    fontFamily: '"Rubik Mono One", system-ui, sans-serif',
+                    letterSpacing: 1
+                  }}
+                >
+                  NEW GAME
+                </button>
+                <button
+                  onClick={() => {
+                    // ゲーム終了時のリプレイ（現在の対局ログを使用）
+                    if (moveLog.length === 0) return
+                    // URL に遷移してリプレイ開始（pushState ではなく移動）
+                    try {
+                      const url = new URL(window.location.href)
+                      url.searchParams.set('replay', '1')
+                      url.searchParams.set('player', String(humanSide))
+                      url.searchParams.set('level', String(depth))
+                      url.searchParams.set('log', moveLog.join('.'))
+                      const target = url.toString()
+                      if (target === window.location.href) {
+                        // 同一URLなら明示リロード
+                        window.location.reload()
+                      } else {
+                        window.location.href = target
+                      }
+                    } catch {
+                      // Fallback: クエリだけで遷移
+                      const q = `?replay=1&player=${humanSide}&level=${depth}&log=${moveLog.join('.')}`
+                      if (window.location.search === q) {
+                        window.location.reload()
+                      } else {
+                        window.location.href = q
+                      }
+                    }
+                  }}
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 900,
+                    padding: '12px 20px',
+                    borderRadius: 14,
+                    backgroundColor: '#1e88e5',
+                    color: '#fff',
+                    border: 'none',
+                    fontFamily: '"Rubik Mono One", system-ui, sans-serif',
+                    letterSpacing: 1
+                  }}
+                >
+                  リプレイ
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -260,7 +447,7 @@ export default function GameElement() {
               style={{
                 fontWeight: 900,
               }}
-              onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null) }}>ゲームスタート</button>
+              onClick={() => { setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null); setMoveLog([]) }}>ゲームスタート</button>
             <div>
               <span style={{ fontWeight: 700 }}>Player:</span>
               <label style={{ marginLeft: 8 }}>
