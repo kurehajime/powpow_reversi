@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import lv0Img from '../assets/lv0.png'
-import lv1Img from '../assets/lv1.png'
-import lv2Img from '../assets/lv2.png'
-import lv3Img from '../assets/lv3.png'
-import lv4Img from '../assets/lv4.png'
-import lv5Img from '../assets/lv5.png'
-import lv6Img from '../assets/lv6.png'
+// avatar images are used inside panel components
 import { Field } from '../model/Field'
 import { useTimer } from 'use-timer'
 import FieldElement from './FieldElement'
@@ -17,7 +11,6 @@ import StartSettingsPanel from './panels/StartSettingsPanel'
 import InfoPanelInGame from './panels/InfoPanelInGame'
 import InfoPanelEnded from './panels/InfoPanelEnded'
 import { hexToRgba } from '../lib/color'
-import { aiLevelLabel } from '../lib/labels'
 import { computeJitterScale } from '../lib/board'
 import { parseLog } from '../lib/replay'
 import { buildReplayUrl, buildReplayQuery, clearReplayParams as clearReplayParamsPure } from '../lib/url'
@@ -58,7 +51,6 @@ export default function GameElement() {
   const cellSize = 60
   const topPanelHeight = 160
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
-  const aiStrengthLabel = useMemo(() => aiLevelLabel(depth), [depth])
   // CPU手の遅延実行タイマー参照（競合時の取りこぼし防止）
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resultText = useMemo(() => {
@@ -75,12 +67,7 @@ export default function GameElement() {
       : resultText === 'YOU LOSE' ? '#FF5252'  // vivid red
         : '#FFD740'                               // vivid amber (draw)
   }, [ended, resultText])
-  // Always show AI side avatar image regardless of turn or result
-  const aiImgSrc = useMemo(() => {
-    const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
-    return list[Math.max(0, Math.min(6, depth))]
-  }, [depth])
-  // avatar rendering moved into panel components
+  // avatar rendering moved into panel components (levelだけ渡す)
 
   // Handlers（複数行の処理をJSXから分離）
   const handleCellClick = (index: number) => {
@@ -362,9 +349,9 @@ export default function GameElement() {
             onChangeDepth={(d) => setDepth(d)}
           />
         ) : ended ? (
-          <InfoPanelEnded field={field} aiImgSrc={aiImgSrc} aiLabel={aiStrengthLabel ?? ''} />
+          <InfoPanelEnded field={field} level={depth} />
         ) : (
-          <InfoPanelInGame field={field} aiImgSrc={aiImgSrc} aiLabel={aiStrengthLabel ?? ''} awaitingResult={awaitingResult} status={status} />
+          <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
         )}
       </div>
     </div>
