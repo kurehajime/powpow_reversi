@@ -16,6 +16,11 @@ import EndOverlay from './EndOverlay'
 import StartSettingsPanel from './panels/StartSettingsPanel'
 import InfoPanelInGame from './panels/InfoPanelInGame'
 import InfoPanelEnded from './panels/InfoPanelEnded'
+import { hexToRgba } from '../lib/color'
+import { aiLevelLabel } from '../lib/labels'
+import { computeJitterScale } from '../lib/board'
+import { parseLog } from '../lib/replay'
+import { buildReplayUrl, buildReplayQuery, clearReplayParams as clearReplayParamsPure } from '../lib/url'
 
 export default function GameElement() {
   // Phase 2: interactive board with alternating turns
@@ -48,17 +53,7 @@ export default function GameElement() {
   const cellSize = 60
   const topPanelHeight = 160
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
-  const aiStrengthLabel = useMemo(() => {
-    switch (depth) {
-      case 0: return 'Lv.0 ひよこ'
-      case 1: return 'Lv.1 ウサギ'
-      case 2: return 'Lv.2 ネコ'
-      case 3: return 'Lv.3 オオカミ'
-      case 4: return 'Lv.4 くま'
-      case 5: return 'Lv.5 ライオン'
-      case 6: return 'Lv.6 ドラゴン'
-    }
-  }, [depth])
+  const aiStrengthLabel = useMemo(() => aiLevelLabel(depth), [depth])
   // CPU手の遅延実行タイマー参照（競合時の取りこぼし防止）
   const aiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resultText = useMemo(() => {
@@ -75,14 +70,6 @@ export default function GameElement() {
       : resultText === 'YOU LOSE' ? '#FF5252'  // vivid red
         : '#FFD740'                               // vivid amber (draw)
   }, [ended, resultText])
-  const hexToRgba = (hex: string, alpha: number): string => {
-    const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex)
-    if (!m) return hex
-    const r = parseInt(m[1], 16)
-    const g = parseInt(m[2], 16)
-    const b = parseInt(m[3], 16)
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`
-  }
   // Always show AI side avatar image regardless of turn or result
   const aiImgSrc = useMemo(() => {
     const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
@@ -93,12 +80,8 @@ export default function GameElement() {
   // URL からリプレイ系パラメータを取り除く（ページ遷移なし）
   const clearReplayParamsInUrl = () => {
     try {
-      const url = new URL(window.location.href)
-      url.searchParams.delete('replay')
-      url.searchParams.delete('player')
-      url.searchParams.delete('level')
-      url.searchParams.delete('log')
-      window.history.replaceState({}, '', url.toString())
+      const newUrl = clearReplayParamsPure(window.location.href)
+      window.history.replaceState({}, '', newUrl)
     } catch { /* noop */ }
   }
   const hints = useMemo(() => {
@@ -115,11 +98,7 @@ export default function GameElement() {
 
   // 手描き風の揺れは SVG の <animate> で実装（JSの更新なし）
   // 揺れ強度はスコアで可変: max(black, white) を ２00 で割って切り上げ、1〜5にクランプ
-  const jitterScale = useMemo(() => {
-    const { black, white } = field.Score()
-    const m = Math.max(black, white)
-    return Math.min(5, Math.max(1, Math.ceil(m / 200)))
-  }, [field])
+  const jitterScale = useMemo(() => computeJitterScale(field), [field])
 
   // auto-pass when no legal moves for current player but opponent has moves
   // 結果画面への遷移は1秒ディレイして演出を持たせる
@@ -193,11 +172,7 @@ export default function GameElement() {
     if (aiTimerRef.current) { clearTimeout(aiTimerRef.current); aiTimerRef.current = null }
     // Parse moves
     const log = sp.get('log')?.trim() ?? ''
-    const moves = log
-      .split('.')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && /^\d+$/.test(s))
-      .map(s => Number(s))
+    const moves = parseLog(log)
     // Optional presets
     const p = sp.get('player')
     const lv = sp.get('level')
@@ -339,19 +314,14 @@ export default function GameElement() {
           onReplay={() => {
             if (moveLog.length === 0) return
             try {
-              const url = new URL(window.location.href)
-              url.searchParams.set('replay', '1')
-              url.searchParams.set('player', String(humanSide))
-              url.searchParams.set('level', String(depth))
-              url.searchParams.set('log', moveLog.join('.'))
-              const target = url.toString()
+              const target = buildReplayUrl(window.location.href, { player: humanSide, level: depth, log: moveLog })
               if (target === window.location.href) {
                 window.location.reload()
               } else {
                 window.location.href = target
               }
             } catch {
-              const q = `?replay=1&player=${humanSide}&level=${depth}&log=${moveLog.join('.')}`
+              const q = buildReplayQuery({ player: humanSide, level: depth, log: moveLog })
               if (window.location.search === q) {
                 window.location.reload()
               } else {
