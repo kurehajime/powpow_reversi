@@ -159,7 +159,9 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
       <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
         <filter id="distortionFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise">
+            <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9;10" dur="3s" repeatCount="indefinite" calcMode="discrete" />
+          </feTurbulence>
           <feDisplacementMap in="SourceGraphic" in2="noise" scale={jitterScale} />
         </filter>
       </svg>
