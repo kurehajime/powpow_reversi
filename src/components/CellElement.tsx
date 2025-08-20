@@ -22,10 +22,25 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
   const strokeColor = isBlack ? '#222222' : '#eeeeee'
   const strokeWidth = Math.max(2, Math.floor(cellSize * 0.10))
   // If the stone value is very large, draw dashed outline to emphasize
-  const isBig = Math.abs(cell) > 100
-  const dashMajor = Math.max(4, Math.floor(cellSize * 0.22))
-  const dashMinor = Math.max(3, Math.floor(cellSize * 0.14))
-  const strokeDasharray = `${dashMajor} ${dashMinor}`
+  // 128以上で強調表示。何分割するか（n）だけを設定できるようにする。
+  const isBig = Math.abs(cell) >= 128
+  // ここだけを変えれば分割数を調整可能（例: 4にすれば4分割の等間隔ダッシュ）
+  const partitionsFor = (absValue: number) => {
+    if (absValue >= 1024) return 64
+    if (absValue >= 512) return 32
+    if (absValue >= 256) return 12
+    return 4
+  }
+  // ダッシュ：ギャップ比は固定（見た目安定のため）。分割数 n のみ可変。
+  const DASH_FILL_RATIO = 0.6 // 1周期中ダッシュの占める割合（0.5=等長）
+  const strokeDasharrayEvenFor = (absValue: number) => {
+    const n = partitionsFor(absValue)
+    const L = 2 * Math.PI * r
+    const unit = L / n
+    const dash = Math.max(2, unit * DASH_FILL_RATIO)
+    const gap = Math.max(1, unit - dash)
+    return `${dash} ${gap}`
+  }
   // Medal ring color: grayscale. White stones -> light gray, Black stones -> dark gray
   const medalColor = isBlack ? '#444444' : '#CCCCCC'
 
@@ -75,8 +90,8 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
               {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
               {/* Medal ring (solid) same radius */}
               <circle cx={cx} cy={cy} r={r} fill="none" stroke={medalColor} strokeWidth={strokeWidth} />
-              {/* Dashed ring overlay (top) same radius */}
-              <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+              {/* Dashed ring overlay (top) same radius; evenly tiles the circumference */}
+              <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharrayEvenFor(Math.abs(cell))} />
               <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
                 {Math.abs(cell)}
               </text>
@@ -98,7 +113,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
           {(() => {
             const prevBlack = flipFrom > 0
             const prevStroke = prevBlack ? '#222222' : '#eeeeee'
-            const prevIsBig = Math.abs(flipFrom) > 100
+            const prevIsBig = Math.abs(flipFrom) >= 128
             const prevDigits = Math.abs(flipFrom).toString().length
             const prevFont = Math.max(10, r * 0.7)
             const prevSize = prevDigits <= 3 ? prevFont * 1.15 : (prevDigits === 4 ? prevFont * 0.85 : prevFont)
@@ -116,8 +131,8 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
                     {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
                     {/* Medal ring (grayscale based on previous color) */}
                     <circle cx={cx} cy={cy} r={r} fill="none" stroke={prevBlack ? '#444444' : '#CCCCCC'} strokeWidth={strokeWidth} />
-                    {/* Dashed overlay */}
-                    <circle cx={cx} cy={cy} r={r} fill="none" stroke={prevStroke} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+                    {/* Dashed overlay; evenly tiles the circumference */}
+                    <circle cx={cx} cy={cy} r={r} fill="none" stroke={prevStroke} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharrayEvenFor(Math.abs(flipFrom))} />
                     <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={prevSize} fill={prevBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
                       {Math.abs(flipFrom)}
                     </text>
@@ -148,8 +163,8 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
                 {isLast && (<circle cx={cx} cy={cy} r={r} fill="#FFD54F" opacity={0.18} />)}
                 {/* Medal ring */}
                 <circle cx={cx} cy={cy} r={r} fill="none" stroke={medalColor} strokeWidth={strokeWidth} />
-                {/* Dashed overlay */}
-                <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharray} />
+                {/* Dashed overlay; evenly tiles the circumference */}
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke={strokeColor} strokeWidth={Math.max(1, Math.floor(strokeWidth * 0.6))} strokeDasharray={strokeDasharrayEvenFor(Math.abs(cell))} />
                 <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fontSize={fontSize} fill={isBlack ? '#fff' : '#111'} fontFamily='"Rubik Mono One", system-ui, sans-serif' style={{ letterSpacing: '-1px' }}>
                   {Math.abs(cell)}
                 </text>
