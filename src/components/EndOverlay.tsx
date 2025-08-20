@@ -9,9 +9,9 @@ type Props = {
 
 export default function EndOverlay({ visible, resultText, titleColor, onBackdropNewGame, onNewGame, onReplay }: Props) {
   if (!visible) return null
-  // Colors: NEW GAME = bright purple, Replay = orange, same opacity
-  const newGameBg = 'rgba(156, 39, 176, 0.85)' // #9C27B0 @ 0.85
-  const replayBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
+  // Colors: NEW GAME = orange, REPLAY = bright purple, same opacity
+  const newGameBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
+  const replayBg = 'rgba(156, 39, 176, 0.85)'   // #9C27B0 @ 0.85
   return (
     <div
       onClick={onBackdropNewGame}
