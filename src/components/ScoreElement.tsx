@@ -15,11 +15,26 @@ export default function ScoreElement({ field, blackAvatar, whiteAvatar }: Props)
   const barHeight = 14
   const barRadius = 6
 
-  const Bar = ({ percent, fg, bg, border }: { percent: number, fg: string, bg: string, border: string }) => (
-    <div style={{ width: '100%', background: bg, border: `2px solid ${border}`, borderRadius: barRadius, height: barHeight, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ width: `${percent}%`, background: fg, height: '100%', borderRadius: barRadius }}></div>
-    </div>
-  )
+  const Bar = ({ percent, fg, bg, border }: { percent: number, fg: string, bg: string, border: string }) => {
+    const p = Math.max(0, Math.min(100, percent))
+    // 左側は常に角丸なし。右側は100%のときのみ角丸なし（それ以外は角丸あり）。
+    const rightRadius = p >= 100 ? 0 : barRadius
+    return (
+      <div style={{ width: '100%', background: bg, border: `2px solid ${border}`, borderRadius: barRadius, height: barHeight, position: 'relative', overflow: 'hidden' }}>
+        <div
+          style={{
+            width: `${p}%`,
+            background: fg,
+            height: '100%',
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderTopRightRadius: rightRadius,
+            borderBottomRightRadius: rightRadius,
+          }}
+        />
+      </div>
+    )
+  }
   const hatchBg = 'repeating-linear-gradient(45deg, #c8c8c8 0 6px, #b0b0b0 6px 12px), ' +
                   'repeating-linear-gradient(-45deg, #c8c8c8 0 6px, #b0b0b0 6px 12px)'
 
