@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTimer } from 'use-timer'
-import FieldElement from './FieldElement'
+import GameScaffold from './GameScaffold'
 import ReplayOverlay from './ReplayOverlay'
 import EndOverlay from './EndOverlay'
 import InfoPanelInGame from './panels/InfoPanelInGame'
@@ -104,24 +104,14 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
-      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
-        <filter id="distortionFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise">
-            <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9;10" dur="3s" repeatCount="indefinite" calcMode="discrete" />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale={jitterScale} />
-        </filter>
-      </svg>
-      <div className="board-wrap">
-        <FieldElement
-          field={field}
-          cellSize={cellSize}
-          hints={new Set()}
-          hintColor={hintColor}
-          lastIndex={lastIndex}
-        />
+    <GameScaffold
+      field={field}
+      cellSize={cellSize}
+      hints={new Set()}
+      hintColor={hintColor}
+      lastIndex={lastIndex}
+      jitterScale={jitterScale}
+      boardOverlays={<>
         <ReplayOverlay visible={replaying} onClick={handleExitToNewGame} />
         <EndOverlay
           visible={ended}
@@ -131,19 +121,16 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
           onNewGame={handleExitToNewGame}
           onReplay={handleReplayRestart}
         />
-      </div>
-      <div className="panel-wrap" style={{ marginTop: 4 }}>
-        <div style={{ fontSize: 14, color: '#444' }}>
-          【ルール】✅ひっくり返すたびに点数2倍 ✅1000点以上取ったら勝ち
+      </>}
+      panel={
+        <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+          {ended ? (
+            <InfoPanelEnded field={field} level={depth} />
+          ) : (
+            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
+          )}
         </div>
-      </div>
-      <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
-        {ended ? (
-          <InfoPanelEnded field={field} level={depth} />
-        ) : (
-          <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
-        )}
-      </div>
-    </div>
+      }
+    />
   )
 }

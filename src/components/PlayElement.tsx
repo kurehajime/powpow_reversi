@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import FieldElement from './FieldElement'
 import StartOverlay from './StartOverlay'
 import EndOverlay from './EndOverlay'
 import StartSettingsPanel from './panels/StartSettingsPanel'
@@ -11,6 +10,7 @@ import { computeJitterScale } from '../lib/board'
 import { hexToRgba } from '../lib/color'
 import { resultColorForText, resultTextForField, type ResultText } from '../lib/result'
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
+import GameScaffold from './GameScaffold'
 
 type Props = {
   initialSide?: 1 | -1
@@ -155,25 +155,15 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
-      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
-        <filter id="distortionFilter">
-          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="1" result="noise">
-            <animate attributeName="seed" values="1;2;3;4;5;6;7;8;9;10" dur="3s" repeatCount="indefinite" calcMode="discrete" />
-          </feTurbulence>
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale={jitterScale} />
-        </filter>
-      </svg>
-      <div className="board-wrap">
-        <FieldElement
-          field={field}
-          cellSize={cellSize}
-          hints={hints}
-          hintColor={hintColor}
-          lastIndex={lastIndex}
-          onCellClick={handleCellClick}
-        />
+    <GameScaffold
+      field={field}
+      cellSize={cellSize}
+      hints={hints}
+      hintColor={hintColor}
+      lastIndex={lastIndex}
+      onCellClick={handleCellClick}
+      jitterScale={jitterScale}
+      boardOverlays={<>
         <StartOverlay visible={!started} onStart={handleStart} />
         <EndOverlay
           visible={ended}
@@ -183,27 +173,24 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
           onNewGame={handleNewGame}
           onReplay={handleReplayFromEnd}
         />
-      </div>
-      <div className="panel-wrap" style={{ marginTop: 4 }}>
-        <div style={{ fontSize: 14, color: '#444' }}>
-          【ルール】✅ひっくり返すたびに点数2倍 ✅1000点以上取ったら勝ち
+      </>}
+      panel={
+        <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+          {!started ? (
+            <StartSettingsPanel
+              humanSide={humanSide}
+              depth={depth}
+              onStart={handleStart}
+              onChangeSide={(s) => setHumanSide(s)}
+              onChangeDepth={(d) => setDepth(d)}
+            />
+          ) : ended ? (
+            <InfoPanelEnded field={field} level={depth} />
+          ) : (
+            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
+          )}
         </div>
-      </div>
-      <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
-        {!started ? (
-          <StartSettingsPanel
-            humanSide={humanSide}
-            depth={depth}
-            onStart={handleStart}
-            onChangeSide={(s) => setHumanSide(s)}
-            onChangeDepth={(d) => setDepth(d)}
-          />
-        ) : ended ? (
-          <InfoPanelEnded field={field} level={depth} />
-        ) : (
-          <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
-        )}
-      </div>
-    </div>
+      }
+    />
   )
 }
