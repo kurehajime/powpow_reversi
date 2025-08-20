@@ -66,21 +66,24 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
     }
     const idx = movesRef.current[nextRef.current]
     let guard = 0
-    let placed = false
-    setField(prev => {
-      let cur = prev
-      while (!cur.CanPlace(idx)) {
-        guard++
-        if (guard > 2) break
-        if (cur.HasAnyMove()) { break }
-        const oppHas = cur.HasAnyMoveFor(cur.Turn === 1 ? -1 : 1)
-        if (!oppHas) break
-        cur = cur.Pass()
-      }
-      if (cur.CanPlace(idx)) { placed = true; return cur.Place(idx) }
-      return cur
-    })
-    if (placed) setLastIndex(idx)
+    // 現在の盤面からパスを考慮して合法手に合わせる
+    let cur = field
+    while (!cur.CanPlace(idx)) {
+      guard++
+      if (guard > 2) break
+      if (cur.HasAnyMove()) { break }
+      const oppHas = cur.HasAnyMoveFor(cur.Turn === 1 ? -1 : 1)
+      if (!oppHas) break
+      cur = cur.Pass()
+    }
+    if (cur.CanPlace(idx)) {
+      const next = cur.Place(idx)
+      setField(next)
+      setLastIndex(idx)
+    } else {
+      // 念のため現在の状態を維持
+      setField(cur)
+    }
     nextRef.current += 1
   }, [replaying, replayTime])
 
