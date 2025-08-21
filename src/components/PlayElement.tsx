@@ -11,6 +11,7 @@ import { hexToRgba } from '../lib/color'
 import { resultColorForText, resultTextForField, type ResultText } from '../lib/result'
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
 import GameScaffold from './GameScaffold'
+import { setCookie } from '../lib/cookie'
 
 type Props = {
   initialSide?: 1 | -1
@@ -132,6 +133,8 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
   }
 
   const handleStart = () => {
+    // Persist last played level in cookie on actual start
+    setCookie('pow_level', String(depth))
     setField(Field.Initial(8)); setStatus(''); setEnded(false); setStarted(true); setLastIndex(null); setMoveLog([]); clearReplayParamsInUrl()
   }
 
@@ -182,7 +185,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
               depth={depth}
               onStart={handleStart}
               onChangeSide={(s) => setHumanSide(s)}
-              onChangeDepth={(d) => setDepth(d)}
+              onChangeDepth={(d) => { setDepth(d); setCookie('pow_level', String(d)) }}
             />
           ) : ended ? (
             <InfoPanelEnded field={field} level={depth} />
