@@ -1,4 +1,5 @@
 import { Field } from '../model/Field'
+import { useTranslation } from 'react-i18next'
 import type { ReactNode } from 'react'
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function ScoreElement({ field, blackAvatar, whiteAvatar }: Props) {
+  const { t } = useTranslation()
   const cells = field.Cells
   const black = cells.filter(c => c > 0).reduce((s, c) => s + Math.abs(c), 0)
   const white = cells.filter(c => c < 0).reduce((s, c) => s + Math.abs(c), 0)
@@ -44,7 +46,7 @@ export default function ScoreElement({ field, blackAvatar, whiteAvatar }: Props)
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
           {blackAvatar}
           <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#111', border: '2px solid #000', verticalAlign: 'middle' }} />
-          <strong style={{ marginLeft: 8 }}>Black</strong>
+          <strong style={{ marginLeft: 8 }}>{t('color.black')}</strong>
           <span style={{ marginLeft: 8 }}>{black} / 1000</span>
         </div>
         <Bar percent={toPercent(black)} fg="#111" bg={hatchBg} border="#000" />
@@ -53,7 +55,7 @@ export default function ScoreElement({ field, blackAvatar, whiteAvatar }: Props)
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700 }}>
           {whiteAvatar}
           <span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: '#fafafa', border: '2px solid #000', verticalAlign: 'middle' }} />
-          <strong style={{ marginLeft: 8 }}>White</strong>
+          <strong style={{ marginLeft: 8 }}>{t('color.white')}</strong>
           <span style={{ marginLeft: 8 }}>{white} / 1000</span>
         </div>
         <Bar percent={toPercent(white)} fg="#fafafa" bg={hatchBg} border="#000" />

@@ -1,0 +1,30 @@
+{
+  "color": { "black": "Black", "white": "White" },
+  "rules": {
+    "title": "Rules",
+    "line1": "Each flip doubles your stone score",
+    "line2": "Reach 1000 points to win",
+    "inline": "【Rules】✅ Doubles on every flip ✅ First to 1000 wins"
+  },
+  "endOverlay": { "newGame": "NEW GAME", "replay": "REPLAY" },
+  "replayOverlay": { "tooltip": "Click to start a new game" },
+  "start": { "startGame": "Start Game", "player": "Player:", "ai": "AI:" },
+  "status": {
+    "pass": "Pass",
+    "gameEnd": "Game over: Black {{black}} - White {{white}}",
+    "noMovesBoth": "No legal moves for both ({{winner}}: Black {{black}} - White {{white}})",
+    "replaying": "Replaying..."
+  },
+  "winner": { "black": "Black wins", "white": "White wins", "draw": "Draw" },
+  "level": {
+    "0": "Lv.0 Chick",
+    "1": "Lv.1 Rabbit",
+    "2": "Lv.2 Cat",
+    "3": "Lv.3 Wolf",
+    "4": "Lv.4 Bear",
+    "5": "Lv.5 Lion",
+    "6": "Lv.6 Dragon"
+  },
+  "lang": { "label": "Language", "ja": "日本語", "en": "English" }
+}
+

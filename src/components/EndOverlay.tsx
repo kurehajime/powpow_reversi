@@ -7,7 +7,10 @@ type Props = {
   onReplay: () => void
 }
 
+import { useTranslation } from 'react-i18next'
+
 export default function EndOverlay({ visible, resultText, titleColor, onBackdropNewGame, onNewGame, onReplay }: Props) {
+  const { t } = useTranslation()
   if (!visible) return null
   // Colors: NEW GAME = orange, REPLAY = bright purple, same opacity
   const newGameBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
@@ -42,9 +45,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
               fontFamily: '"Rubik Mono One", system-ui, sans-serif',
               letterSpacing: 1
             }}
-          >
-            NEW GAME
-          </button>
+          >{t('endOverlay.newGame')}</button>
           <button
             onClick={onReplay}
             style={{
@@ -58,9 +59,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
               fontFamily: '"Rubik Mono One", system-ui, sans-serif',
               letterSpacing: 1
             }}
-          >
-            REPLAY
-          </button>
+          >{t('endOverlay.replay')}</button>
         </div>
       </div>
     </div>

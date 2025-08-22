@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useTimer } from 'use-timer'
 import GameScaffold from './GameScaffold'
 import ReplayOverlay from './ReplayOverlay'
@@ -19,8 +20,9 @@ type Props = {
 }
 
 export default function ReplayElement({ moves, player, level, intervalMs = 500, onExitToNewGame }: Props) {
+  const { t } = useTranslation()
   const [field, setField] = useState<Field>(() => Field.Initial(8))
-  const [status, setStatus] = useState('リプレイ中...')
+  const [status, setStatus] = useState(t('status.replaying'))
   const [lastIndex, setLastIndex] = useState<number | null>(null)
   const [ended, setEnded] = useState(false)
   const [awaitingResult, setAwaitingResult] = useState(false)
@@ -46,12 +48,12 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
     setField(Field.Initial(8))
     setEnded(false)
     setLastIndex(null)
-    setStatus('リプレイ中...')
+    setStatus(t('status.replaying'))
     movesRef.current = moves
     nextRef.current = 0
     reset()
     start()
-  }, [moves, reset, start])
+  }, [moves, reset, start, t])
 
   // 1手ずつ進める
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
     // 同じログでリプレイを最初からやり直す
     setEnded(false)
     setReplaying(true)
-    setStatus('リプレイ中...')
+    setStatus(t('status.replaying'))
     setLastIndex(null)
     movesRef.current = moves
     nextRef.current = 0

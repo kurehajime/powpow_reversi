@@ -1,0 +1,30 @@
+{
+  "color": { "black": "黒", "white": "白" },
+  "rules": {
+    "title": "【ルール】",
+    "line1": "ひっくり返すたびに点数2倍",
+    "line2": "1000点以上取ったら勝ち",
+    "inline": "【ルール】✅ひっくり返すたびに点数2倍 ✅1000点以上取ったら勝ち"
+  },
+  "endOverlay": { "newGame": "NEW GAME", "replay": "REPLAY" },
+  "replayOverlay": { "tooltip": "クリックで新規ゲーム" },
+  "start": { "startGame": "ゲームスタート", "player": "Player:", "ai": "AI:" },
+  "status": {
+    "pass": "パス",
+    "gameEnd": "試合終了: 黒 {{black}} - 白 {{white}}",
+    "noMovesBoth": "双方打てる手がありません（{{winner}}: 黒 {{black}} - 白 {{white}}）",
+    "replaying": "リプレイ中..."
+  },
+  "winner": { "black": "黒勝ち", "white": "白勝ち", "draw": "引き分け" },
+  "level": {
+    "0": "Lv.0 ひよこ",
+    "1": "Lv.1 ウサギ",
+    "2": "Lv.2 ネコ",
+    "3": "Lv.3 オオカミ",
+    "4": "Lv.4 くま",
+    "5": "Lv.5 ライオン",
+    "6": "Lv.6 ドラゴン"
+  },
+  "lang": { "label": "言語", "ja": "日本語", "en": "English" }
+}
+

@@ -12,6 +12,7 @@ import { resultColorForText, resultTextForField, type ResultText } from '../lib/
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
 import GameScaffold from './GameScaffold'
 import { setCookie } from '../lib/cookie'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   initialSide?: 1 | -1
@@ -19,6 +20,7 @@ type Props = {
 }
 
 export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props) {
+  const { t } = useTranslation()
   const [field, setField] = useState<Field>(() => Field.Initial(8))
   const [status, setStatus] = useState('')
   const [lastIndex, setLastIndex] = useState<number | null>(null)
@@ -63,25 +65,20 @@ export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props
     let endTimer: ReturnType<typeof setTimeout> | null = null
     if (field.IsEndByScore()) {
       const { black, white } = field.Score()
-      const winner = field.WinnerByScore()
-      setStatus(
-        winner === 1
-          ? `試合終了: 黒 ${black} - 白 ${white}`
-          : winner === -1
-            ? `試合終了: 白 ${white} - 黒 ${black}`
-            : `試合終了: 黒 ${black} - 白 ${white}`,
-      )
+      setStatus(t('status.gameEnd', { black, white }))
       setAwaitingResult(true)
       endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
     } else if (!field.HasAnyMove()) {
       const opp = field.HasAnyMoveFor(field.Turn === 1 ? -1 : 1)
       if (opp) {
-        setStatus('パス')
+        setStatus(t('status.pass'))
         setField(field.Pass())
       } else {
         const { black, white } = field.Score()
-        const winner = black === white ? '引き分け' : (black > white ? '黒勝ち' : '白勝ち')
-        setStatus(`双方打てる手がありません（${winner}: 黒 ${black} - 白 ${white}）`)
+        const winner = (black === white)
+          ? t('winner.draw')
+          : (black > white ? t('winner.black') : t('winner.white'))
+        setStatus(t('status.noMovesBoth', { winner, black, white }))
         setAwaitingResult(true)
         endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
       }

@@ -3,13 +3,16 @@ type Props = {
   onClick: () => void
 }
 
+import { useTranslation } from 'react-i18next'
+
 export default function ReplayOverlay({ visible, onClick }: Props) {
+  const { t } = useTranslation()
   if (!visible) return null
   return (
     <div
       onClick={onClick}
       style={{ position: 'absolute', inset: 0, cursor: 'pointer' }}
-      title="クリックで新規ゲーム"
+      title={t('replayOverlay.tooltip')}
     >
       {/* tint layer (blend separately) */}
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(80, 160, 255, 0.18)', mixBlendMode: 'multiply', zIndex: 1 }} />

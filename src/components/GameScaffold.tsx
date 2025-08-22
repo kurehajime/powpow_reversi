@@ -1,5 +1,6 @@
 import FieldElement from './FieldElement'
 import { Field } from '../model/Field'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   field: Field
@@ -24,6 +25,7 @@ export default function GameScaffold({
   boardOverlays,
   panel,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
       <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
@@ -52,13 +54,10 @@ export default function GameScaffold({
 
       {/* 盤面の下にルールの Marquee */}
       <div className="panel-wrap" style={{ marginTop: 4 }}>
-        <div style={{ fontSize: 14, color: '#444' }}>
-          【ルール】✅ひっくり返すたびに点数2倍 ✅1000点以上取ったら勝ち
-        </div>
+        <div style={{ fontSize: 14, color: '#444' }}>{t('rules.inline')}</div>
       </div>
 
       {panel}
     </div>
   )
 }
-
