@@ -36,7 +36,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
     angle: 90,
     decay: 0.9,
     zIndex: 10,
-    position: 'fixed',
+    position: 'absolute',
   }
   const confettiConfig = {
     spread: 80,
@@ -46,7 +46,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
     angle: 90,
     decay: 0.9,
     zIndex: 10,
-    position: 'fixed',
+    position: 'absolute',
     colors: ['#FFEB3B', '#FF9800', '#E91E63', '#2196F3', '#4CAF50'],
   }
   const { reward: rewardEmoji } = useReward('result-reward-center', 'emoji', emojiConfig)
@@ -62,6 +62,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
     }, 30)
     return () => clearTimeout(t)
   }, [visible, resultText])
+
   if (!visible) return null
   return (
     <div
@@ -75,11 +76,12 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
         cursor: 'pointer',
         backdropFilter: 'blur(0.5px)',
         WebkitBackdropFilter: 'blur(0.5px)',
+        overflow: 'hidden',
       }}
     >
       <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, position: 'relative' }}>
         {/* Invisible anchor at center for reward effects */}
-        <div id="result-reward-center" aria-hidden style={{ position: 'absolute', top: '50%', left: '50%', width: 0, height: 0, pointerEvents: 'none' }} />
+        <div id="result-reward-center" aria-hidden style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 0, height: 0, pointerEvents: 'none' }} />
         <div
           onClick={(e) => { e.stopPropagation(); onNewGame() }}
           style={{
