@@ -8,9 +8,10 @@ type Props = {
   hints?: ReadonlySet<number>
   hintColor?: 'black' | 'white'
   lastIndex?: number | null
+  flippedIndices?: ReadonlySet<number>
 }
 
-export default function FieldElement({ field, cellSize = 60, onCellClick, hints, hintColor, lastIndex }: Props) {
+export default function FieldElement({ field, cellSize = 60, onCellClick, hints, hintColor, lastIndex, flippedIndices }: Props) {
   const size = field.Size()
   const dim = size * cellSize
   // Slight corner radius for the whole board
@@ -54,7 +55,17 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
           const x = (index % size) * cellSize
           const y = Math.floor(index / size) * cellSize
           return (
-            <CellElement key={index} cell={cell} x={x} y={y} cellSize={cellSize} hint={hints?.has(index)} hintColor={hintColor} isLast={lastIndex === index} />
+            <CellElement
+              key={index}
+              cell={cell}
+              x={x}
+              y={y}
+              cellSize={cellSize}
+              hint={hints?.has(index)}
+              hintColor={hintColor}
+              isLast={lastIndex === index}
+              isFlipped={flippedIndices?.has(index)}
+            />
           )
         })}
         {/* corner star dots (2 cells from each corner) - draw above cells */}

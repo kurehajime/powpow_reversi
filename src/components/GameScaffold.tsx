@@ -12,6 +12,7 @@ type Props = {
   jitterScale: number
   boardOverlays?: React.ReactNode
   panel: React.ReactNode
+  flippedIndices?: ReadonlySet<number>
 }
 
 export default function GameScaffold({
@@ -24,6 +25,7 @@ export default function GameScaffold({
   jitterScale,
   boardOverlays,
   panel,
+  flippedIndices,
 }: Props) {
   const { t } = useTranslation()
   const title = 'POW POW REVERSI'
@@ -70,6 +72,7 @@ export default function GameScaffold({
           hintColor={hintColor}
           lastIndex={lastIndex}
           onCellClick={onCellClick}
+          flippedIndices={flippedIndices}
         />
         {boardOverlays}
       </div>

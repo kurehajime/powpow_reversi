@@ -4,6 +4,9 @@ import type { Cell } from './types'
 export class Field {
   private readonly _cells: Cell[]
   private readonly _turn: 1 | -1
+  // Track last action for UI/analytics: where the last stone was placed and which stones flipped
+  private readonly _lastPlaced: number | null
+  private readonly _lastFlipped: number[]
 
   public get Cells(): Readonly<Cell[]> {
     // return a frozen copy to ensure immutability at the edges
@@ -11,15 +14,21 @@ export class Field {
   }
   public get Turn(): 1 | -1 { return this._turn }
 
-  constructor(cells: Cell[], turn: 1 | -1 = 1) {
+  constructor(cells: Cell[], turn: 1 | -1 = 1, lastPlaced: number | null = null, lastFlipped: number[] = []) {
     this._cells = [...cells]
     this._turn = turn
+    this._lastPlaced = lastPlaced
+    this._lastFlipped = [...lastFlipped]
   }
 
   public Size(): number {
     const n = Math.sqrt(this._cells.length)
     return Number.isInteger(n) ? n : 0
   }
+
+  // Last action metadata
+  public get LastPlaced(): number | null { return this._lastPlaced }
+  public get LastFlipped(): ReadonlyArray<number> { return this._lastFlipped }
 
   // Scores
   public Score(): { black: number, white: number } {
@@ -63,7 +72,7 @@ export class Field {
     cells[idx(mid, mid)] = -2
     cells[idx(mid - 1, mid)] = +2
     cells[idx(mid, mid - 1)] = +2
-    return new Field(cells, 1)
+    return new Field(cells, 1, null, [])
   }
 
   // Whether a move at index is valid for current turn
@@ -100,7 +109,8 @@ export class Field {
 
   // Pass (swap turn)
   public Pass(): Field {
-    return new Field(this._cells, this._turn === 1 ? -1 : 1)
+    // Passing clears last action metadata (no placement or flips on pass)
+    return new Field(this._cells, this._turn === 1 ? -1 : 1, null, [])
   }
 
   // Place a stone for current player if valid; otherwise returns self
@@ -114,7 +124,7 @@ export class Field {
     for (const i of flips) {
       nextCells[i] = -(nextCells[i]) * 2 as Cell
     }
-    return new Field(nextCells, this._turn === 1 ? -1 : 1)
+    return new Field(nextCells, this._turn === 1 ? -1 : 1, index, flips)
   }
 
   // Compute list of indices to flip for placing at index with given turn

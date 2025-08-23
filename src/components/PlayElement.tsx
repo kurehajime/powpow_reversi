@@ -160,7 +160,8 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
       cellSize={cellSize}
       hints={hints}
       hintColor={hintColor}
-      lastIndex={lastIndex}
+      lastIndex={field.LastPlaced ?? lastIndex}
+      flippedIndices={new Set(field.LastFlipped)}
       onCellClick={handleCellClick}
       jitterScale={jitterScale}
       boardOverlays={<>

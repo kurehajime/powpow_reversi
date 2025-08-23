@@ -114,7 +114,8 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
       cellSize={cellSize}
       hints={new Set()}
       hintColor={hintColor}
-      lastIndex={lastIndex}
+      lastIndex={field.LastPlaced ?? lastIndex}
+      flippedIndices={new Set(field.LastFlipped)}
       jitterScale={jitterScale}
       boardOverlays={<>
         <ReplayOverlay visible={replaying} onClick={handleExitToNewGame} />

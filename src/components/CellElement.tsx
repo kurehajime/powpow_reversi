@@ -10,9 +10,10 @@ type Props = {
   hint?: boolean
   hintColor?: 'black' | 'white'
   isLast?: boolean
+  isFlipped?: boolean
 }
 
-export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isLast }: Props) {
+export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isLast, isFlipped }: Props) {
   const padding = Math.max(2, Math.floor(cellSize * 0.08))
   const cx = x + cellSize / 2
   const cy = y + cellSize / 2
@@ -71,9 +72,13 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
   return (
     <g style={{ cursor: !isDisc && hint ? 'pointer' as const : 'default' }}>
       <rect x={x} y={y} width={cellSize} height={cellSize} fill="seagreen" stroke="rgba(255, 255, 255, 0.07)" strokeWidth={1} />
+      {/* flipped highlight (lighter yellow) */}
+      {isFlipped && (
+        <rect x={x} y={y} width={cellSize} height={cellSize} fill="#FFF59D" opacity={0.22} />
+      )}
       {/* last-move highlight on the cell (not on the stone) */}
       {isLast && (
-        <rect x={x} y={y} width={cellSize} height={cellSize} fill="#FFD54F" opacity={0.3} />
+        <rect x={x} y={y} width={cellSize} height={cellSize} fill="#FFC107" opacity={0.4} />
       )}
       {/* hint dot for legal move on empty cell */}
       {!isDisc && hint && (
