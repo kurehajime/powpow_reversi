@@ -37,7 +37,9 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
       }}
     >
       <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-        <div style={{
+        <div
+          onClick={(e) => { e.stopPropagation(); onNewGame() }}
+          style={{
           fontSize: 64,
           fontWeight: 800,
           color: titleColor,
@@ -46,7 +48,10 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
           lineHeight: 1,
           WebkitTextStrokeWidth: strokeColor ? '0.5px' : undefined,
           WebkitTextStrokeColor: strokeColor,
-        }}>
+          cursor: 'pointer',
+          userSelect: 'none',
+        }}
+        >
           {resultText}
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
