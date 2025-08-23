@@ -29,12 +29,14 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
   // Effects: win -> confetti, lose -> explosion emoji, draw -> fallback emoji
   const emojiConfig = {
     emoji: ['💥'],
-    spread: 80,
-    lifetime: 220,
-    elementCount: 50,
-    startVelocity: 12,
-    angle: 90,
+    // Explosion-like scatter: 360° spread from center
+    spread: 360,
+    angle: 0,
+    startVelocity: 22,
+    lifetime: 240,
     decay: 0.9,
+    elementCount: 90,
+    rotate: true,
     zIndex: 10,
     position: 'absolute',
   }
