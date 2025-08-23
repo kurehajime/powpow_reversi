@@ -14,8 +14,8 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
   const { t } = useTranslation()
   if (!visible) return null
   // Colors: NEW GAME = orange, REPLAY = bright purple, same opacity
-  const newGameBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
-  const replayBg = 'rgba(156, 39, 176, 0.85)'   // #9C27B0 @ 0.85
+  const newGameBg = 'rgba(255, 152, 0, 0.72)'   // #FF9800 @ 0.72
+  const replayBg = 'rgba(156, 39, 176, 0.72)'   // #9C27B0 @ 0.72
   // CSS stroke keeps layout identical while adding thin outline
   const strokeBase = resultText === 'YOU WIN'
     ? '#1976D2'

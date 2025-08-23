@@ -168,7 +168,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
         <EndOverlay
           visible={ended}
           resultText={resultText}
-          titleColor={hexToRgba(resultColor, 0.85)}
+          titleColor={hexToRgba(resultColor, 0.72)}
           onBackdropNewGame={handleNewGame}
           onNewGame={handleNewGame}
           onReplay={handleReplayFromEnd}
