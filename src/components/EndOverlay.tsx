@@ -41,10 +41,10 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
     position: 'absolute',
   }
   const confettiConfig = {
-    spread: 80,
-    lifetime: 220,
-    elementCount: 120,
-    startVelocity: 14,
+    spread: 140,
+    lifetime: 280,
+    elementCount: 160,
+    startVelocity: 18,
     angle: 90,
     decay: 0.9,
     zIndex: 10,
