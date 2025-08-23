@@ -8,6 +8,7 @@ type Props = {
 }
 
 import { useTranslation } from 'react-i18next'
+import { hexToRgba } from '../lib/color'
 
 export default function EndOverlay({ visible, resultText, titleColor, onBackdropNewGame, onNewGame, onReplay }: Props) {
   const { t } = useTranslation()
@@ -15,6 +16,12 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
   // Colors: NEW GAME = orange, REPLAY = bright purple, same opacity
   const newGameBg = 'rgba(255, 152, 0, 0.85)'   // #FF9800 @ 0.85
   const replayBg = 'rgba(156, 39, 176, 0.85)'   // #9C27B0 @ 0.85
+  // CSS stroke keeps layout identical while adding thin outline
+  const strokeBase = resultText === 'YOU WIN'
+    ? '#1976D2'
+    : (resultText === 'YOU LOSE' ? '#C62828' : undefined)
+  // Make the outline a bit lighter (semi-transparent)
+  const strokeColor = strokeBase ? hexToRgba(strokeBase, 0.6) : undefined
   return (
     <div
       onClick={onBackdropNewGame}
@@ -26,7 +33,10 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
           fontWeight: 800,
           color: titleColor,
           letterSpacing: 2,
-          fontFamily: '"Rubik Mono One", system-ui, sans-serif'
+          fontFamily: '"Rubik Mono One", system-ui, sans-serif',
+          lineHeight: 1,
+          WebkitTextStrokeWidth: strokeColor ? '0.5px' : undefined,
+          WebkitTextStrokeColor: strokeColor,
         }}>
           {resultText}
         </div>
