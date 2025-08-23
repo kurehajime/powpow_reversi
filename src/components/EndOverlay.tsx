@@ -25,7 +25,16 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
   return (
     <div
       onClick={onBackdropNewGame}
-      style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: 'rgba(0,0,0,0.35)',
+        display: 'grid',
+        placeItems: 'center',
+        cursor: 'pointer',
+        backdropFilter: 'blur(0.5px)',
+        WebkitBackdropFilter: 'blur(0.5px)',
+      }}
     >
       <div onClick={(e) => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
         <div style={{
