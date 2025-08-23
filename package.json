@@ -15,6 +15,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-i18next": "^15.7.1",
+    "react-rewards": "^2.1.0",
     "use-timer": "^2.0.1"
   },
   "devDependencies": {
