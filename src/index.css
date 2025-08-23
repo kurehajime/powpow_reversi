@@ -19,6 +19,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -31,7 +32,8 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
-  padding-top: 4px; /* ほんの少し上に余白 */
+  padding-top: 4px;
+  /* ほんの少し上に余白 */
 }
 
 button {
@@ -46,6 +48,7 @@ button {
   cursor: pointer;
   transition: opacity 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
+
 button:hover {
   border-color: #222;
   opacity: 0.9;
@@ -53,17 +56,30 @@ button:hover {
 
 /* NEW GAME 強調用の軽いパルスアニメーション */
 @keyframes pulse-scale {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
+
 .btn-pulse {
   animation: pulse-scale 1.8s ease-in-out infinite;
   will-change: transform;
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .btn-pulse { animation: none; }
+  .btn-pulse {
+    animation: none;
+  }
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -75,9 +91,11 @@ button:focus-visible {
     /* ライトモードでも薄い茶色に戻す */
     background-color: #f6f3f0;
   }
+
   a:hover {
     color: #747bff;
   }
+
   /* ボタンの配色は常に黒背景・白文字に統一 */
   button {
     background-color: #000;
@@ -94,11 +112,13 @@ button:focus-visible {
   max-width: clamp(320px, 85vmin, 500px);
   margin: 0 auto;
 }
+
 .panel-wrap {
   width: 100%;
   max-width: clamp(320px, 85vmin, 500px);
   margin: 0 auto;
 }
+
 .board-svg {
   width: 100%;
   height: auto;
@@ -112,7 +132,36 @@ button:focus-visible {
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+/* Subtle pulsing for legal-move hint dots (does not fully disappear) */
+@keyframes hint-pulse {
+  0% {
+    opacity: 0.18;
+  }
+
+  50% {
+    opacity: 0.28;
+  }
+
+  100% {
+    opacity: 0.18;
+  }
+}
+
+.hint-pulse {
+  animation: hint-pulse 0.8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint-pulse {
+    animation: none;
+    opacity: 0.35;
+  }
+}
+
 @media (max-width: 768px) {
+
   .board-wrap,
   .panel-wrap {
     width: calc(100% - 24px);

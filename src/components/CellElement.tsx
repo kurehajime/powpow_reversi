@@ -83,6 +83,7 @@ export default function CellElement({ cell, x, y, cellSize, hint, hintColor, isL
       {/* hint dot for legal move on empty cell */}
       {!isDisc && hint && (
         <circle
+          className="hint-pulse"
           cx={cx}
           cy={cy}
           r={Math.max(3, r * 0.35)}
