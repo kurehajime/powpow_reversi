@@ -136,7 +136,10 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
           ) : (
             <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
           )}
-          <PanelShare replay={{ player: humanSide, level: depth, log: movesRef.current }} />
+          <PanelShare
+            replay={{ player: humanSide, level: depth, log: movesRef.current }}
+            resultKey={ended ? (resultText as 'YOU WIN' | 'YOU LOSE' | 'DRAW') : undefined}
+          />
         </div>
       }
     />

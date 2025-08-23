@@ -191,7 +191,10 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
           ) : (
             <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
           )}
-          <PanelShare replay={ended && moveLog.length > 0 ? { player: humanSide, level: depth, log: moveLog } : undefined} />
+          <PanelShare
+            replay={ended && moveLog.length > 0 ? { player: humanSide, level: depth, log: moveLog } : undefined}
+            resultKey={ended ? (resultText as 'YOU WIN' | 'YOU LOSE' | 'DRAW') : undefined}
+          />
         </div>
       }
     />

@@ -48,6 +48,12 @@
   },
   "share": {
     "shareOnX": "Xでシェア",
-    "message": "POW POW REVERSI をプレイしました！"
+    "shareResultOnX": "Xで結果をシェア",
+    "message": "POW POW REVERSI #powpowreversi",
+    "result": {
+      "win": "勝ちました！",
+      "lose": "負けました…",
+      "draw": "引き分けでした。"
+    }
   }
 }
