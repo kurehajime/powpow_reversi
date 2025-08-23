@@ -17,14 +17,13 @@
   },
   "winner": { "black": "Black wins", "white": "White wins", "draw": "Draw" },
   "level": {
-    "0": "Lv.0 Chick",
-    "1": "Lv.1 Rabbit",
-    "2": "Lv.2 Cat",
-    "3": "Lv.3 Wolf",
-    "4": "Lv.4 Bear",
-    "5": "Lv.5 Lion",
-    "6": "Lv.6 Dragon"
+    "0": "Lv.0 Timid Chick",
+    "1": "Lv.1 Cool Rabbit",
+    "2": "Lv.2 Noble Cat",
+    "3": "Lv.3 Awesome Wolf",
+    "4": "Lv.4 Reliable Bear",
+    "5": "Lv.5 Strong Lion",
+    "6": "Lv.6 Fearsome Dragon"
   },
   "lang": { "label": "Language", "ja": "日本語", "en": "English" }
 }
-
