@@ -26,9 +26,29 @@ export default function GameScaffold({
   panel,
 }: Props) {
   const { t } = useTranslation()
+  const title = 'POW POW REVERSI'
+  const orange = ['#FFC107', '#FF9800', '#F57C00'] // light -> mid -> dark
+  const blue = ['#4FC3F7', '#1E88E5', '#1565C0']   // light -> mid -> dark
+  const green = ['#2E7D32', '#1B5E20', '#004D40']  // dark green gradient
+  const renderWordWithColors = (word: string, palette: string[]) => (
+    <>
+      {word.split('').map((ch, i) => (
+        <span key={`${word}-${i}`} style={{ color: palette[i % palette.length] }}>{ch}</span>
+      ))}
+    </>
+  )
+  const titleNode = (
+    <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }} aria-label={title}>
+      {renderWordWithColors('POW', orange)}
+      <span aria-hidden style={{ display: 'inline-block', width: '0.5ch' }}>{' '}</span>
+      {renderWordWithColors('POW', blue)}
+      <span aria-hidden style={{ display: 'inline-block', width: '0.5ch' }}>{' '}</span>
+      {renderWordWithColors('REVERSI', green)}
+    </h1>
+  )
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-      <h1 style={{ margin: 0, paddingTop: 8, fontSize: 'clamp(28px, 4vw, 36px)', letterSpacing: '-0.02em', fontFamily: '"Rubik Mono One", system-ui, sans-serif' }}>POW POW REVERSI</h1>
+      {titleNode}
 
       {/* Hidden SVG filter defs (hand-drawn jitter) */}
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0 }}>
