@@ -67,7 +67,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
       const { black, white } = field.Score()
       setStatus(t('status.gameEnd', { black, white }))
       setAwaitingResult(true)
-      endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
+      endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1300)
     } else if (!field.HasAnyMove()) {
       const opp = field.HasAnyMoveFor(field.Turn === 1 ? -1 : 1)
       if (opp) {
@@ -80,7 +80,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
           : (black > white ? t('winner.black') : t('winner.white'))
         setStatus(t('status.noMovesBoth', { winner, black, white }))
         setAwaitingResult(true)
-        endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1000)
+        endTimer = setTimeout(() => { setEnded(true); setAwaitingResult(false) }, 1300)
       }
     }
     return () => { if (endTimer) clearTimeout(endTimer); setAwaitingResult(false) }
