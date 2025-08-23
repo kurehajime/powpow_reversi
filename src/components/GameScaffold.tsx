@@ -27,9 +27,11 @@ export default function GameScaffold({
 }: Props) {
   const { t } = useTranslation()
   const title = 'POW POW REVERSI'
-  const orange = ['#FFC107', '#FF9800', '#F57C00'] // light -> mid -> dark
-  const blue = ['#4FC3F7', '#1E88E5', '#1565C0']   // light -> mid -> dark
-  const green = ['#2E7D32', '#1B5E20', '#004D40']  // dark green gradient
+  // dark -> mid -> light
+  const orange = ['#F57C00', '#FF9800', '#FFC107']
+  const blue = ['#1565C0', '#1E88E5', '#4FC3F7']
+  // dark -> mid -> light (reverse of before)
+  const green = ['#004D40', '#1B5E20', '#2E7D32']  // dark green gradient
   const renderWordWithColors = (word: string, palette: string[]) => (
     <>
       {word.split('').map((ch, i) => (
