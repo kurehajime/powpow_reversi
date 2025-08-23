@@ -19,7 +19,7 @@ type Props = {
   initialLevel?: number
 }
 
-export default function PlayElement({ initialSide = 1, initialLevel = 1 }: Props) {
+export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props) {
   const { t } = useTranslation()
   const [field, setField] = useState<Field>(() => Field.Initial(8))
   const [status, setStatus] = useState('')

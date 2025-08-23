@@ -17,8 +17,8 @@ export default function GameRoot() {
   const cookieLevel = cookieLevelRaw && /^\d+$/.test(cookieLevelRaw) ? Math.max(0, Math.min(6, Number(cookieLevelRaw))) : null
   const levelFromUrl = levelIn && /^\d+$/.test(levelIn) ? Math.max(0, Math.min(6, Number(levelIn))) : null
   const initialLevel = (isReplay
-    ? (levelFromUrl ?? 1)
-    : (levelFromUrl ?? cookieLevel ?? 1))
+    ? (levelFromUrl ?? 0)
+    : (levelFromUrl ?? cookieLevel ?? 0))
   const moves = parseLog(sp.get('log') ?? '')
 
   const [mode, setMode] = useState<'play' | 'replay'>(isReplay ? 'replay' : 'play')
