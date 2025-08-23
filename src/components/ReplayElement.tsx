@@ -6,6 +6,7 @@ import ReplayOverlay from './ReplayOverlay'
 import EndOverlay from './EndOverlay'
 import InfoPanelInGame from './panels/InfoPanelInGame'
 import InfoPanelEnded from './panels/InfoPanelEnded'
+import PanelShare from './PanelShare'
 import { Field } from '../model/Field'
 import { computeJitterScale } from '../lib/board'
 import { hexToRgba } from '../lib/color'
@@ -31,7 +32,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
   const [depth] = useState<number>(level)
 
   const cellSize = 60
-  const topPanelHeight = 160
+  // panel height follows content; no fixed height
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const jitterScale = useMemo(() => computeJitterScale(field), [field])
   const resultText = useMemo(() => ended ? resultTextForField(field, humanSide) : '', [ended, field, humanSide])
@@ -129,12 +130,13 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
         />
       </>}
       panel={
-        <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+        <div className="panel-wrap" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
           {ended ? (
             <InfoPanelEnded field={field} level={depth} />
           ) : (
             <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
           )}
+          <PanelShare replay={{ player: humanSide, level: depth, log: movesRef.current }} />
         </div>
       }
     />

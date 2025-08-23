@@ -12,6 +12,7 @@ import { resultColorForText, resultTextForField, type ResultText } from '../lib/
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
 import GameScaffold from './GameScaffold'
 import { setCookie } from '../lib/cookie'
+import PanelShare from './PanelShare'
 import { useTranslation } from 'react-i18next'
 
 type Props = {
@@ -33,7 +34,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
 
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
-  const topPanelHeight = 160
+  // panel height follows content; no fixed height
   const cpuSide: 1 | -1 = (humanSide === 1 ? -1 : 1)
   const jitterScale = useMemo(() => computeJitterScale(field), [field])
 
@@ -176,7 +177,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
         />
       </>}
       panel={
-        <div className="panel-wrap" style={{ height: topPanelHeight, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
+        <div className="panel-wrap" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
           {!started ? (
             <StartSettingsPanel
               humanSide={humanSide}
@@ -190,6 +191,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
           ) : (
             <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
           )}
+          <PanelShare replay={ended && moveLog.length > 0 ? { player: humanSide, level: depth, log: moveLog } : undefined} />
         </div>
       }
     />

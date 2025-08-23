@@ -133,6 +133,12 @@ button:focus-visible {
   -ms-user-select: none;
 }
 
+/* Share bar hover reveal */
+.share-wrap:hover .share-reveal { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+/* Footer share hover reveal */
+.footer-share:hover .footer-share-inner { opacity: 1; transform: translateY(0); }
+
 /* Subtle pulsing for legal-move hint dots (does not fully disappear) */
 @keyframes hint-pulse {
   0% {

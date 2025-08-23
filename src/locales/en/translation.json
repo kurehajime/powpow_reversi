@@ -25,5 +25,9 @@
     "5": "Lv.5 Strong Lion",
     "6": "Lv.6 Fearsome Dragon"
   },
-  "lang": { "label": "Language", "ja": "日本語", "en": "English" }
+  "lang": { "label": "Language", "ja": "日本語", "en": "English" },
+  "share": {
+    "shareOnX": "Share on X",
+    "message": "I played POW POW REVERSI!"
+  }
 }
