@@ -37,7 +37,7 @@ export default function FieldElement({ field, cellSize = 60, onCellClick, hints,
     >
       <defs>
         <filter id="discShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="1.5" stdDeviation="1.0" flood-color="rgba(0,0,0,0.4)" />
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1.0" floodColor="rgba(0,0,0,0.4)" />
         </filter>
         <clipPath id="boardClip">
           <rect x={0} y={0} width={dim} height={dim} rx={cornerRadius} ry={cornerRadius} />
