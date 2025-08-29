@@ -121,6 +121,8 @@ button:focus-visible {
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Dark page background for full viewport (html element) */
+    background-color: #0f0f10;
     /* Dark theme for select */
     --select-bg: #1b1c1e;
     --select-border: #444;
