@@ -79,7 +79,7 @@ export default function GameScaffold({
 
       {/* 盤面の下にルールの Marquee */}
       <div className="panel-wrap" style={{ marginTop: 4 }}>
-        <div style={{ fontSize: 14, color: '#444' }}>{t('rules.inline')}</div>
+        <div style={{ fontSize: 14, color: 'var(--muted-text)' }}>{t('rules.inline')}</div>
       </div>
 
       {panel}

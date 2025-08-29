@@ -31,8 +31,9 @@ export default function StartSettingsPanel({ humanSide, depth, onStart, onChange
             style={{
               padding: '8px 40px 8px 12px',
               borderRadius: 12,
-              border: '2px solid #bbb',
-              background: '#ffffff',
+              border: '2px solid var(--select-border)',
+              backgroundColor: 'var(--select-bg)',
+              color: 'var(--select-fg)',
               appearance: 'none',
               WebkitAppearance: 'none',
               MozAppearance: 'none',
@@ -44,7 +45,7 @@ export default function StartSettingsPanel({ humanSide, depth, onStart, onChange
               <option key={lv} value={lv}>{t(`level.${lv}`)}</option>
             ))}
           </select>
-          <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666' }}>▼</span>
+          <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--select-caret)' }}>▼</span>
         </div>
       </div>
     </div>

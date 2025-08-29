@@ -12,6 +12,15 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Themed controls */
+  --select-bg: #ffffff;
+  --select-border: #bbb;
+  --select-fg: #111;
+  --select-caret: #666;
+
+  /* Muted text (labels, inline rules) */
+  --muted-text: #444;
 }
 
 a {
@@ -27,6 +36,12 @@ a:hover {
 body {
   margin: 0;
   min-width: 320px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f0f10;
+  }
 }
 
 h1 {
@@ -101,6 +116,19 @@ button:focus-visible {
     background-color: #000;
     color: #fff;
     border-color: #000;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark theme for select */
+    --select-bg: #1b1c1e;
+    --select-border: #444;
+    --select-fg: #e5e5e5;
+    --select-caret: #aaa;
+
+    /* Slightly brighter muted text for dark mode */
+    --muted-text: rgba(255, 255, 255, 0.82);
   }
 }
 

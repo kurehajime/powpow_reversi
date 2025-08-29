@@ -26,7 +26,7 @@ export default function InfoPanelEnded({ field, level }: Props) {
         <div style={{ width: 96, height: 96, borderRadius: 12, background: '#eee', border: '2px solid #bbb', overflow: 'hidden', display: 'grid', placeItems: 'center' }}>
           <AiAvatar src={aiImgSrc} alt={`AI ${aiLabel}`} />
         </div>
-        <div style={{ fontSize: 12, color: '#555' }}>{aiLabel}</div>
+        <div style={{ fontSize: 12, color: 'var(--muted-text)' }}>{aiLabel}</div>
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
         <ScoreElement field={field} />
