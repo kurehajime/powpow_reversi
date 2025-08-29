@@ -1,6 +1,8 @@
 import ScoreElement from '../ScoreElement'
 import AiAvatar from '../AiAvatar'
 import type { Field } from '../../model/Field'
+import type { PlayerRecord } from '../../lib/stats'
+import { useTranslation } from 'react-i18next'
 import { aiLevelLabel } from '../../lib/labels'
 import lv0Img from '../../assets/lv0.png'
 import lv1Img from '../../assets/lv1.png'
@@ -15,9 +17,10 @@ type Props = {
   level: number
   awaitingResult: boolean
   status: string
+  record?: PlayerRecord
 }
 
-export default function InfoPanelInGame({ field, level, awaitingResult, status }: Props) {
+export default function InfoPanelInGame({ field, level, awaitingResult, status, record }: Props) {
   const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
   const idx = Math.max(0, Math.min(6, level))
   const aiImgSrc = list[idx]
@@ -29,11 +32,24 @@ export default function InfoPanelInGame({ field, level, awaitingResult, status }
           <AiAvatar src={aiImgSrc} alt={`AI ${aiLabel}`} awaiting={awaitingResult} />
         </div>
         <div style={{ fontSize: 12, color: 'var(--muted-text)' }}>{aiLabel}</div>
+        {record ? (
+          <RecordLine record={record} />
+        ) : null}
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 6 }}>
         <ScoreElement field={field} />
         <div>{status}</div>
       </div>
+    </div>
+  )
+}
+
+function RecordLine({ record }: { record: PlayerRecord }) {
+  const { t } = useTranslation()
+  const { win: w, lose: l, draw: d } = record
+  return (
+    <div style={{ fontSize: 12, color: 'var(--muted-text)' }}>
+      {t('stats.record', { w, l, d })}
     </div>
   )
 }

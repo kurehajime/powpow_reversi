@@ -32,6 +32,9 @@
     "white": "White wins",
     "draw": "Draw"
   },
+  "stats": {
+    "record": "{{w}}W {{l}}L {{d}}D"
+  },
   "level": {
     "0": "Lv.0 Timid Chick",
     "1": "Lv.1 Cool Rabbit",

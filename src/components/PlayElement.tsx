@@ -9,6 +9,7 @@ import { thinkAlphaBeta, thinkGreedy, evaluateEasy } from '../ai/AlphaBeta'
 import { computeJitterScale } from '../lib/board'
 import { hexToRgba } from '../lib/color'
 import { resultColorForText, resultTextForField, type ResultText } from '../lib/result'
+import { getRecord, updateRecord, type PlayerRecord } from '../lib/stats'
 import { buildReplayQuery, buildReplayUrl, clearReplayParams } from '../lib/url'
 import GameScaffold from './GameScaffold'
 import { setCookie } from '../lib/cookie'
@@ -31,6 +32,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
   const [humanSide, setHumanSide] = useState<1 | -1>(initialSide)
   const [depth, setDepth] = useState<number>(initialLevel)
   const [moveLog, setMoveLog] = useState<number[]>([])
+  const [record, setRecord] = useState<PlayerRecord>(() => getRecord())
 
   const hintColor: 'black' | 'white' = field.Turn === 1 ? 'black' : 'white'
   const cellSize = 60
@@ -86,6 +88,14 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
     }
     return () => { if (endTimer) clearTimeout(endTimer); setAwaitingResult(false) }
   }, [field, started, ended])
+
+  // Update player record when a game ends
+  useEffect(() => {
+    if (!ended) return
+    const res = resultTextForField(field, humanSide)
+    const next = updateRecord(res)
+    setRecord(next)
+  }, [ended])
 
   useEffect(() => {
     if (!started || ended || awaitingResult) return
@@ -187,9 +197,9 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
               onChangeDepth={(d) => { setDepth(d); setCookie('pow_level', String(d)) }}
             />
           ) : ended ? (
-            <InfoPanelEnded field={field} level={depth} />
+            <InfoPanelEnded field={field} level={depth} record={record} />
           ) : (
-            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
+            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} record={record} />
           )}
           <PanelShare
             replay={ended && moveLog.length > 0 ? { player: humanSide, level: depth, log: moveLog } : undefined}

@@ -1,6 +1,8 @@
 import ScoreElement from '../ScoreElement'
 import AiAvatar from '../AiAvatar'
 import type { Field } from '../../model/Field'
+import type { PlayerRecord } from '../../lib/stats'
+import { useTranslation } from 'react-i18next'
 import { aiLevelLabel } from '../../lib/labels'
 import lv0Img from '../../assets/lv0.png'
 import lv1Img from '../../assets/lv1.png'
@@ -13,9 +15,11 @@ import lv6Img from '../../assets/lv6.png'
 type Props = {
   field: Field
   level: number
+  record?: PlayerRecord
 }
 
-export default function InfoPanelEnded({ field, level }: Props) {
+export default function InfoPanelEnded({ field, level, record }: Props) {
+  const { t } = useTranslation()
   const list = [lv0Img, lv1Img, lv2Img, lv3Img, lv4Img, lv5Img, lv6Img]
   const idx = Math.max(0, Math.min(6, level))
   const aiImgSrc = list[idx]
@@ -27,6 +31,9 @@ export default function InfoPanelEnded({ field, level }: Props) {
           <AiAvatar src={aiImgSrc} alt={`AI ${aiLabel}`} />
         </div>
         <div style={{ fontSize: 12, color: 'var(--muted-text)' }}>{aiLabel}</div>
+        {record ? (
+          <div style={{ fontSize: 12, color: 'var(--muted-text)' }}>{t('stats.record', { w: record.win, l: record.lose, d: record.draw })}</div>
+        ) : null}
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 8 }}>
         <ScoreElement field={field} />

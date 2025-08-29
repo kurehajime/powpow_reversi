@@ -6,6 +6,7 @@ import ReplayOverlay from './ReplayOverlay'
 import EndOverlay from './EndOverlay'
 import InfoPanelInGame from './panels/InfoPanelInGame'
 import InfoPanelEnded from './panels/InfoPanelEnded'
+import { getRecord, type PlayerRecord } from '../lib/stats'
 import PanelShare from './PanelShare'
 import { Field } from '../model/Field'
 import { computeJitterScale } from '../lib/board'
@@ -30,6 +31,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
   const [replaying, setReplaying] = useState(true)
   const [humanSide] = useState<1 | -1>(player)
   const [depth] = useState<number>(level)
+  const [record] = useState<PlayerRecord>(() => getRecord())
 
   const cellSize = 60
   // panel height follows content; no fixed height
@@ -132,9 +134,9 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
       panel={
         <div className="panel-wrap" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 8 }}>
           {ended ? (
-            <InfoPanelEnded field={field} level={depth} />
+            <InfoPanelEnded field={field} level={depth} record={record} />
           ) : (
-            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} />
+            <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} record={record} />
           )}
           <PanelShare
             replay={{ player: humanSide, level: depth, log: movesRef.current }}
