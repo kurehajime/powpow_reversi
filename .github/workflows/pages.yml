@@ -32,10 +32,11 @@ jobs:
           node -v
           npm -v
 
-      - name: Clean install (workaround rollup optional deps)
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
 
       - name: Build
         run: npm run build

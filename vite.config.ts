@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react-swc'
 // - In GitHub Actions: '/<repo>/' (works for project pages)
 // - Or override via env: VITE_BASE
 // Avoid Node typings by using globalThis
-const env = (globalThis as any)?.process?.env as Record<string, string | undefined> | undefined
+const env = (globalThis as { process?: { env?: Record<string, string | undefined> } })?.process?.env
 const repo = env?.GITHUB_REPOSITORY?.split('/')?.[1]
 const inferredBase = env?.GITHUB_ACTIONS && repo ? `/${repo}/` : '/'
 const base = env?.VITE_BASE ?? inferredBase
