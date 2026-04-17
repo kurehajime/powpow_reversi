@@ -12,8 +12,8 @@
   "dependencies": {
     "i18next": "^25.4.0",
     "motion": "^12.23.12",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-i18next": "^15.7.1",
     "react-rewards": "^2.1.0",
     "use-timer": "^2.0.1"
