@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "i18next": "^26.0.8",
-    "motion": "^12.23.12",
+    "motion": "^12.38.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-i18next": "^15.7.1",
