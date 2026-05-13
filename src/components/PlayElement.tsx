@@ -87,7 +87,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
       }
     }
     return () => { if (endTimer) clearTimeout(endTimer); setAwaitingResult(false) }
-  }, [field, started, ended])
+  }, [field, started, ended, t])
 
   // Update player record when a game ends
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function PlayElement({ initialSide = 1, initialLevel = 0 }: Props
     const res = resultTextForField(field, humanSide)
     const next = updateRecord(res)
     setRecord(next)
-  }, [ended])
+  }, [ended, field, humanSide])
 
   useEffect(() => {
     if (!started || ended || awaitingResult) return

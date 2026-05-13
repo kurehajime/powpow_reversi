@@ -15,7 +15,7 @@ export default function PanelShare({ replay, resultKey }: { replay?: ReplayParam
       }
       return base
     } catch { return '' }
-  }, [replay?.player, replay?.level, replay?.log])
+  }, [replay])
   const resultLabel = resultKey === 'YOU WIN'
     ? t('share.result.win', { defaultValue: 'I won!' })
     : resultKey === 'YOU LOSE'

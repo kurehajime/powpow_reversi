@@ -90,6 +90,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
       setField(cur)
     }
     nextRef.current += 1
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- adding field advances extra replay moves within the same timer tick
   }, [replaying, replayTime])
 
   const handleExitToNewGame = () => {
@@ -139,7 +140,7 @@ export default function ReplayElement({ moves, player, level, intervalMs = 500, 
             <InfoPanelInGame field={field} level={depth} awaitingResult={awaitingResult} status={status} record={record} />
           )}
           <PanelShare
-            replay={{ player: humanSide, level: depth, log: movesRef.current }}
+            replay={{ player: humanSide, level: depth, log: moves }}
             resultKey={ended ? (resultText as 'YOU WIN' | 'YOU LOSE' | 'DRAW') : undefined}
           />
         </div>
