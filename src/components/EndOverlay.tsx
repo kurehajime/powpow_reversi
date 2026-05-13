@@ -63,7 +63,7 @@ export default function EndOverlay({ visible, resultText, titleColor, onBackdrop
       } catch { /* noop */ }
     }, 30)
     return () => clearTimeout(t)
-  }, [visible, resultText])
+  }, [visible, isWin, isLose, rewardConfetti, rewardEmoji])
 
   if (!visible) return null
   return (
